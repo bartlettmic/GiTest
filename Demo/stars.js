@@ -224,7 +224,11 @@ function Render(c) {
 
         alphaA *= Math.min(alphaA, alphaB, alphaC);
         alphaB *= Math.min(alphaA, alphaB, alphaC);
-        alphaC *= Math.min(alphaA, alphaB, alphaC);        
+        alphaC *= Math.min(alphaA, alphaB, alphaC);  
+
+        // alphaA *= alphaB*alphaC;                
+        // alphaB *= alphaA*alphaC;
+        // alphaC *= alphaA*alphaB;      
 
         // alphaA = Math.min(alphaA, alphaB, alphaC);
         // alphaB = Math.min(alphaA, alphaB, alphaC);

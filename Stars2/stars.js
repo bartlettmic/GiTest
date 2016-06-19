@@ -95,11 +95,11 @@ $(function() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     
     context.font = '10px sans-serif';
-	context.fillStyle="white";
-	context.fillText(fps+" FPS",5,window.innerHeight-5);
+	  context.fillStyle="white";
+	  context.fillText(fps+" FPS",5,window.innerHeight-5);
 
     for (var i = 0; i < dots.length; i++) dots[i].update();
-	for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
+	  for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
     for (var i = 0; i < dots.length; i++) dots[i].render(context);
     setTimeout(loop, 0);     
 }();
