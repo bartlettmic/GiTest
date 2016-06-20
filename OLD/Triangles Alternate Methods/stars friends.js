@@ -47,7 +47,6 @@ $(document).ready(function() {
     });
     for (var i = 0; i < stars; i++) dots.push(new Dot(i));
     //setInterval(loop, 1000 / FPS);
-    //console.log(new Date().getTime());
 });
 
 //update mouse position
@@ -90,7 +89,7 @@ $(function() {
 
 //Loop function
 ! function loop() {
-    //update screen size
+    // update screen size
     frames++;
     if (new Date()-date >= 1000) {
         date = new Date();
@@ -112,11 +111,10 @@ $(function() {
     context.fillText(fps+" FPS",5,window.innerHeight-5);
 
     for (var i = 0; i < dots.length; i++) dots[i].update();
-    for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
+    for (var i = 0; i < dots.length; i++) dots[i].friend();
     Render(context);
-setTimeout(loop, 0);
+    setTimeout(loop, 0);
 }();
-
 
 //Dot class constructor
 function Dot(ID) {
@@ -153,48 +151,53 @@ Dot.prototype.update = function() {
     if (this.pos.y >= window.innerHeight) { this.vel.y *= (this.vel.y < 0 ? 1 : -1);  this.pos.y = window.innerHeight; }
 };
 
+Dot.prototype.friend = function() {
+   this.ids.clear();
+    for (var i = 0; i < dots.length; i++) {
+        if (lines > 0 && this.ids.size >= lines) break;
+        if (this.id == i || dots[i].ids.has(this.id)) continue;
+        var distance = Math.sqrt(Math.pow(this.pos.x - dots[i].pos.x, 2) + Math.pow(this.pos.y - dots[i].pos.y, 2));
+        if (distance <= maxDist) { this.ids.add(i); dots[i].ids.add(this.id); }
+        //this.ids.set(i, distance);
+        //dots[i].ids.set(this.id, distance);
+    }
+};
+
 function Render(c) {
-    for (var x=0; x<dots.length; x++) {
-        if (lines > 0 && dots[x].ids.size > lines) continue;
-        for (var y=x+1; y<dots.length; y++) {
-            if (lines > 0 && dots[y].ids.size > lines) continue;
-            if (Math.sqrt(Math.pow(dots[x].pos.x - dots[y].pos.x, 2) + Math.pow(dots[x].pos.y - dots[y].pos.y, 2)) > maxDist) continue;
-            for (var z=y+1; z<dots.length; z++) {
+    //console.log("Frame");
+    for (let d of dots) {
+        if (d.ids.size > 0) for (var x of d.ids) {
+            if (d.ids.size > 0) for (var y of dots[x].ids) {
+                // if (Math.sqrt(Math.pow(dots[y].pos.x - dots[x].pos.x, 2) + Math.pow(dots[y].pos.y - dots[x].pos.y, 2)) > maxDist || Math.sqrt(Math.pow(dots[y].pos.x - d.pos.x, 2) + Math.pow(dots[y].pos.y - d.pos.y, 2)) > maxDist) {
+                //     // var grd = c.createLinearGradient(d.pos.x, d.pos.y, d.pos.x, dots[x].pos.y),
+                //     //     alpha = 1-(Math.sqrt(Math.pow(d.pos.x - dots[x].pos.x, 2) + Math.pow(d.pos.y - dots[x].pos.y, 2))/maxDist),
 
-                if (lines > 0 && dots[z].ids.size > lines) continue;
-                if (Math.sqrt(Math.pow(dots[z].pos.x - dots[y].pos.x, 2) + Math.pow(dots[z].pos.y - dots[y].pos.y, 2)) > maxDist || Math.sqrt(Math.pow(dots[z].pos.x - dots[x].pos.x, 2) + Math.pow(dots[z].pos.y - dots[x].pos.y, 2)) > maxDist) {
-                    // var grd = c.createLinearGradient(dots[x].pos.x, dots[x].pos.y, dots[x].pos.x, dots[y].pos.y),
-                    //     alpha = 1-(Math.sqrt(Math.pow(dots[x].pos.x - dots[y].pos.x, 2) + Math.pow(dots[x].pos.y - dots[y].pos.y, 2))/maxDist),
-                    //
-                    //     cC = "rgba(" + dots[x].r + "," + dots[x].g + "," + dots[x].b + "," + alpha + ")",
-                    //     cB = "rgba(" + dots[y].r + "," + dots[y].g + "," + dots[y].b + "," + alpha + ")";
-                    //
-                    // grd.addColorStop(0, cC); grd.addColorStop(1, cB);
-                    // c.beginPath(); c.moveTo(dots[x].pos.x, dots[x].pos.y);
-                    // c.lineTo(dots[y].pos.x, dots[y].pos.y);
-                    // c.strokeStyle = grd; c.lineWidth=1; c.stroke();
-                    // c.closePath();
-                    continue;
-                }
-                dots[x].ids.add(dots[y].id); dots[x].ids.add(dots[z].id);
-                dots[y].ids.add(dots[z].id); dots[y].ids.add(dots[x].id);
-                dots[z].ids.add(dots[x].id); dots[z].ids.add(dots[y].id);
+                //     //     cC = "rgba(" + d.r + "," + d.g + "," + d.b + "," + alpha + ")",
+                //     //     cB = "rgba(" + dots[x].r + "," + dots[x].g + "," + dots[x].b + "," + alpha + ")";
 
-                center = { x: (dots[x].pos.x + dots[y].pos.x + dots[z].pos.x) / 3, y: (dots[x].pos.y + dots[y].pos.y + dots[z].pos.y) / 3, A:0, B:0, C:0 };
-                center.A = Math.sqrt(Math.pow(dots[x].pos.x - center.x, 2) + Math.pow(dots[x].pos.y - center.y, 2));
+                //     // grd.addColorStop(0, cC); grd.addColorStop(1, cB);
+                //     // c.beginPath(); c.moveTo(d.pos.x, d.pos.y);
+                //     // c.lineTo(dots[x].pos.x, dots[x].pos.y);
+                //     // c.strokeStyle = grd; c.lineWidth=1; c.stroke();
+                //     // c.closePath();
+                //     continue;
+                // }
+
+                var center = { x: (d.pos.x + dots[x].pos.x + dots[y].pos.x) / 3, y: (d.pos.y + dots[x].pos.y + dots[y].pos.y) / 3, A:0, B:0, C:0 };
+                center.A = Math.sqrt(Math.pow(d.pos.x - center.x, 2) + Math.pow(d.pos.y - center.y, 2));
                 if (center.A > maxRadius) continue;
-                center.B = Math.sqrt(Math.pow(dots[y].pos.x - center.x, 2) + Math.pow(dots[y].pos.y - center.y, 2));
+                center.B = Math.sqrt(Math.pow(dots[x].pos.x - center.x, 2) + Math.pow(dots[x].pos.y - center.y, 2));
                 if (center.B > maxRadius) continue;
-                center.C = Math.sqrt(Math.pow(dots[z].pos.x - center.x, 2) + Math.pow(dots[z].pos.y - center.y, 2));
+                center.C = Math.sqrt(Math.pow(dots[y].pos.x - center.x, 2) + Math.pow(dots[y].pos.y - center.y, 2));
                 if (center.C > maxRadius) continue;
 
-                var AB = { x: (dots[x].pos.x + dots[y].pos.x) / 2, y: (dots[x].pos.y + dots[y].pos.y) / 2 },
-                    BC = { x: (dots[y].pos.x + dots[z].pos.x) / 2, y: (dots[y].pos.y + dots[z].pos.y) / 2 },
-                    CA = { x: (dots[z].pos.x + dots[x].pos.x) / 2, y: (dots[z].pos.y + dots[x].pos.y) / 2 },
+                var AB = { x: (d.pos.x + dots[x].pos.x) / 2, y: (d.pos.y + dots[x].pos.y) / 2 },
+                    BC = { x: (dots[x].pos.x + dots[y].pos.x) / 2, y: (dots[x].pos.y + dots[y].pos.y) / 2 },
+                    CA = { x: (dots[y].pos.x + d.pos.x) / 2, y: (dots[y].pos.y + d.pos.y) / 2 },
 
-                    gA = c.createLinearGradient(dots[x].pos.x, dots[x].pos.y, BC.x, BC.y),
-                    gB = c.createLinearGradient(dots[y].pos.x, dots[y].pos.y, CA.x, CA.y),
-                    gC = c.createLinearGradient(dots[z].pos.x, dots[z].pos.y, AB.x, AB.y),
+                    gA = c.createLinearGradient(d.pos.x, d.pos.y, BC.x, BC.y),
+                    gB = c.createLinearGradient(dots[x].pos.x, dots[x].pos.y, CA.x, CA.y),
+                    gC = c.createLinearGradient(dots[y].pos.x, dots[y].pos.y, AB.x, AB.y),
 
                     alphaA = 1-(center.A/maxRadius),
                     alphaB = 1-(center.B/maxRadius),
@@ -204,16 +207,16 @@ function Render(c) {
                 if (alphaB > .5) alphaB *= (alphaB-.5)+1;
                 if (alphaC > .5) alphaC *= (alphaC-.5)+1;
 
-                //console.log("X: "+dots[x].id+", Y: "+dots[y].id+", Z: "+dots[z].id);
+                //console.log("X: "+d.id+", Y: "+dots[x].id+", Z: "+dots[y].id);
 
                 // var index=0, minalph = 3;
-                // if (alphaA < minalph) { minalph = alphaA; index = dots[x].id;}
-                // if (alphaB < minalph) { minalph = alphaB; index = dots[y].id;}
-                // if (alphaC < minalph) { minalph = alphaC; index = dots[z].id;}
+                // if (alphaA < minalph) { minalph = alphaA; index = d.id;}
+                // if (alphaB < minalph) { minalph = alphaB; index = dots[x].id;}
+                // if (alphaC < minalph) { minalph = alphaC; index = dots[y].id;}
 
-                // if (index != dots[x].id) alphaA *= minalph;
-                // if (index != dots[y].id) alphaB *= minalph;
-                // if (index != dots[z].id) alphaC *= minalph;
+                // if (index != d.id) alphaA *= minalph;
+                // if (index != dots[x].id) alphaB *= minalph;
+                // if (index != dots[y].id) alphaC *= minalph;
 
                 alphaA *= Math.min(alphaA, alphaB, alphaC);
                 alphaC *= Math.min(alphaA, alphaB, alphaC);
@@ -223,9 +226,9 @@ function Render(c) {
                 // alphaB *= alphaA*alphaC;
                 // alphaC *= alphaA*alphaB;
 
-                var cA = "rgba(" + dots[x].r + "," + dots[x].g + "," + dots[x].b + "," + alphaA + ")",
-                    cB = "rgba(" + dots[y].r + "," + dots[y].g + "," + dots[y].b + "," + alphaB + ")",
-                    cC = "rgba(" + dots[z].r + "," + dots[z].g + "," + dots[z].b + "," + alphaC + ")",
+                var cA = "rgba(" + d.r + "," + d.g + "," + d.b + "," + alphaA + ")",
+                    cB = "rgba(" + dots[x].r + "," + dots[x].g + "," + dots[x].b + "," + alphaB + ")",
+                    cC = "rgba(" + dots[y].r + "," + dots[y].g + "," + dots[y].b + "," + alphaC + ")",
                     c0 = "rgba(0,0,0,0)";
 
                     c0 = "rgba(0,0,0,0)";
@@ -238,26 +241,29 @@ function Render(c) {
                 gC.addColorStop(1, c0);
 
                 c.beginPath();
-                c.moveTo(dots[x].pos.x, dots[x].pos.y);
+                c.moveTo(d.pos.x, d.pos.y);
 
+                c.lineTo(dots[x].pos.x, dots[x].pos.y);
                 c.lineTo(dots[y].pos.x, dots[y].pos.y);
-                c.lineTo(dots[z].pos.x, dots[z].pos.y);
 
-                // c.quadraticCurveTo(center.x, center.y, dots[y].pos.x, dots[y].pos.y);
-                // c.quadraticCurveTo(center.x, center.y, dots[z].pos.x, dots[z].pos.y);
                 // c.quadraticCurveTo(center.x, center.y, dots[x].pos.x, dots[x].pos.y);
+                // c.quadraticCurveTo(center.x, center.y, dots[y].pos.x, dots[y].pos.y);
+                // c.quadraticCurveTo(center.x, center.y, d.pos.x, d.pos.y);
 
                 //c.globalCompositeOperation = 'screen';
                 //c.globalCompositeOperation = 'lighten';
                 c.fillStyle = gA;
                 c.fill();
 
-                c.fillStyle = gB;0
+                c.fillStyle = gB;
                 c.fill();
 
                 c.fillStyle = gC;
                 c.fill();
                 //c.globalCompositeOperation = 'source-over';
+
+                //dots[x].ids.delete(y);
+                //d.ids.delete(x);
             }
         }
     }

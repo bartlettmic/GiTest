@@ -10,24 +10,30 @@
   • Fade triangles better
   • Make sure checkbox speedbug is fixed on merge
   */
-  
+
 var mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
     canvas = document.createElement('canvas'),
     context = canvas.getContext('2d'),
     dots = [],
     Lines = new Set(),
-    FPS = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 30 : 60,
-    stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50,
-    maxDiv = -11.5,
+    //FPS = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 30 : 60,
+    //stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50,
+    stars = 270,
+    maxDiv = -19,
     maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv,
-    speed = 0.25,
+    maxRadius = maxDist * Math.sqrt(3) / 3,
+    speed = 2.25,
     thick = 3.5,
     //lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
-    lines = 10,
+    lines = 0,
     G = 200,
     gravity = false,
     showDots = false,
-    tether = false;
+    tether = false,
+
+    frames = 0,
+    fps = 0,
+    date = new Date();
 
 //Initialize
 $(document).ready(function() {
@@ -41,8 +47,7 @@ $(document).ready(function() {
         this.checked = window[this.id] ? window[this.id].toString() : "";
     });
     for (var i = 0; i < stars; i++) dots.push(new Dot(i));
-    setInterval(loop, 1000 / FPS);
-    console.log(new Date().getTime());
+    //setInterval(loop, 1000 / FPS);
 });
 
 //update mouse position
@@ -81,20 +86,35 @@ $(function() {
 
 
 //Loop function
-function loop() {
-    // update screen size
-    if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
+! function loop() {
+    /// update screen size
+    frames++;
+    if (new Date()-date >= 1000) {
+        date = new Date();
+        fps = frames;
+        frames = 0;
+        console.log("   "+Math.random()*100+"   "+fps);
     }
+
+    if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      maxDistance = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
+    }
+
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+    context.font = '10px sans-serif';
+    context.fillStyle="white";
+    context.fillText(fps+" FPS",5,window.innerHeight-5);
+
     for (var i = 0; i < dots.length; i++) dots[i].update();
     for (var i = 0; i < dots.length; i++) dots[i].friend();
     Lines.clear();
     for (var i = 0; i < dots.length; i++) dots[i].lines();
     Render(context);
-}
+    setTimeout(loop, 0);
+}();
 
 
 //Dot class constructor
@@ -123,9 +143,9 @@ Dot.prototype.update = function() {
         Y /= (this.ids.size + 1);
         this.pos.x += (4 * X + this.vel.x) / 5;
         this.pos.y += (4 * Y + this.vel.y) / 5;
-    } 
+    }
     else { this.pos.x += this.vel.x; this.pos.y += this.vel.y; }
-    
+
     if (this.pos.x <= 0) this.vel.x *= (this.vel.x > 0 ? 1 : -1);
     if (this.pos.x >= window.innerWidth) { this.vel.x *= (this.vel.x < 0 ? 1 : -1); this.pos.x = window.innerWidth; }
     if (this.pos.y <= 0) this.vel.y *= (this.vel.y > 0 ? 1 : -1);
@@ -151,7 +171,7 @@ Dot.prototype.lines = function() {
     if (this.ids.size > 0) {
         /*
         var min = maxDist, index = 0;
-        for (var i of this.ids.keys()) if (this.ids.get(i) < min) { min = this.ids.get(i); index = i; }        
+        for (var i of this.ids.keys()) if (this.ids.get(i) < min) { min = this.ids.get(i); index = i; }
         dots[index].ids.delete(this.id);
         Lines.add(new Line(this, dots[index]));
         */
@@ -177,39 +197,39 @@ function Render(c) {
                 center.A = Math.sqrt(Math.pow(A.pos.x - center.x, 2) + Math.pow(A.pos.y - center.y, 2)),
                 center.B = Math.sqrt(Math.pow(B.pos.x - center.x, 2) + Math.pow(B.pos.y - center.y, 2)),
                 center.C = Math.sqrt(Math.pow(C.pos.x - center.x, 2) + Math.pow(C.pos.y - center.y, 2));
-                
-                //console.log("A: "+A.id+", B: "+B.id+", C: "+C.id);               
+
+                //console.log("A: "+A.id+", B: "+B.id+", C: "+C.id);
 
             if (center.A > maxRadius || center.B > maxRadius || center.C > maxRadius) continue;
-                       
+
             var AB = { x: (A.pos.x + B.pos.x) / 2, y: (A.pos.y + B.pos.y) / 2 },
 
                 BC = { x: (B.pos.x + C.pos.x) / 2, y: (B.pos.y + C.pos.y) / 2 },
 
-                CA = { x: (C.pos.x + A.pos.x) / 2, y: (C.pos.y + A.pos.y) / 2 },                
+                CA = { x: (C.pos.x + A.pos.x) / 2, y: (C.pos.y + A.pos.y) / 2 },
 
                 gA = c.createLinearGradient(A.pos.x, A.pos.y, BC.x, BC.y),
                 gB = c.createLinearGradient(B.pos.x, B.pos.y, CA.x, CA.y),
                 gC = c.createLinearGradient(C.pos.x, C.pos.y, AB.x, AB.y),
 
                 alphaA = 1-(center.A/maxRadius),
-                alphaB = 1-(center.B/maxRadius),        
-                alphaC = 1-(center.C/maxRadius);        
+                alphaB = 1-(center.B/maxRadius),
+                alphaC = 1-(center.C/maxRadius);
 
-            if (alphaA > .5) alphaA *= (alphaA-.5)+1;            
-            if (alphaB > .5) alphaB *= (alphaB-.5)+1;            
-            if (alphaC > .5) alphaC *= (alphaC-.5)+1;            
+            if (alphaA > .5) alphaA *= (alphaA-.5)+1;
+            if (alphaB > .5) alphaB *= (alphaB-.5)+1;
+            if (alphaC > .5) alphaC *= (alphaC-.5)+1;
 
             alphaA *= Math.min(alphaA, alphaB, alphaC);
             alphaB *= Math.min(alphaA, alphaB, alphaC);
-            alphaC *= Math.min(alphaA, alphaB, alphaC);                       
+            alphaC *= Math.min(alphaA, alphaB, alphaC);
 
             var cA = "rgba(" + A.r + "," + A.g + "," + A.b + "," + alphaA + ")",
                 cB = "rgba(" + B.r + "," + B.g + "," + B.b + "," + alphaB + ")",
                 cC = "rgba(" + C.r + "," + C.g + "," + C.b + "," + alphaC + ")",
                 c0 = "rgba(0,0,0,0)";
 
-                c0 = "rgba(0,0,0,0)";                
+                c0 = "rgba(0,0,0,0)";
 
             gA.addColorStop(0, cA);
             gA.addColorStop(1, c0);
@@ -228,6 +248,7 @@ function Render(c) {
             //c.quadraticCurveTo(center.x, center.y, C.pos.x, C.pos.y);
             //c.quadraticCurveTo(center.x, center.y, A.pos.x, A.pos.y);
 
+            //c.globalCompositeOperation = 'lighten';
             c.fillStyle = gA;
             c.fill();
 
@@ -236,6 +257,7 @@ function Render(c) {
 
             c.fillStyle = gC;
             c.fill();
+            //c.globalCompositeOperation = 'source-over';
         }
     }
 };

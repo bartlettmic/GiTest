@@ -18,11 +18,11 @@
   gravity = false,
   showDots = false,
   tether = false,
-  
+
   frames = 0,
   fps = 0,
-  date = new Date();  
-  
+  date = new Date();
+
 
 //Initialize
 $(document).ready(function() {
@@ -36,18 +36,18 @@ $(document).ready(function() {
     this.checked = window[this.id] ? window[this.id].toString() : "";
   });
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
-    //setInterval(loop, 1000 / FPS);  
+    //setInterval(loop, 1000 / FPS);
 });
 
 //update mouse position
 $(document).mousemove(function(e) {
-  e.preventDefault();
+  //e.preventDefault();
   mousePos = { x: e.clientX, y: e.clientY	};
 });
 
 //Slider and checkbox updates
 $(function() {
-  $('input[type="range"]').change(function(e) {
+  $('input[type="range"]').on("input change",function(e) {
     if (e.target.id == 'speed') {
       for (let d of dots) {
         d.vel.x *= e.target.value / speed;
@@ -69,8 +69,8 @@ $(function() {
   $('input[type="checkbox"]').change(function(e) {
     window[e.target.value] = e.target.checked;
     if (e.target.id == 'tether') {
-      if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; } 
-      else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }        
+      if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
+      else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
   }
   });
 })
@@ -84,8 +84,8 @@ $(function() {
 		date = new Date();
 		fps = frames;
 		frames = 0;
-	}	
-	
+	}
+
     if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -93,7 +93,7 @@ $(function() {
     }
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     context.font = '10px sans-serif';
 	  context.fillStyle="white";
 	  context.fillText(fps+" FPS",5,window.innerHeight-5);
@@ -101,7 +101,7 @@ $(function() {
     for (var i = 0; i < dots.length; i++) dots[i].update();
 	  for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
     for (var i = 0; i < dots.length; i++) dots[i].render(context);
-    setTimeout(loop, 0);     
+    setTimeout(loop, 0);
 }();
 
 
@@ -143,7 +143,7 @@ Dot.prototype.update = function() {
   }
   if (this.pos.x <= 0) this.vel.x *= (this.vel.x > 0 ? 1 : -1);
   if (this.pos.x >= window.innerWidth) { this.vel.x *= (this.vel.x < 0 ? 1 : -1); this.pos.x = window.innerWidth; }
-  if (this.pos.y <= 0) this.vel.y *= (this.vel.y > 0 ? 1 : -1); 
+  if (this.pos.y <= 0) this.vel.y *= (this.vel.y > 0 ? 1 : -1);
   if (this.pos.y >= window.innerHeight) { this.vel.y *= (this.vel.y < 0 ? 1 : -1); this.pos.y = window.innerHeight; }
 };
 
@@ -197,6 +197,6 @@ Dot.prototype.render = function(c) {
           c.strokeStyle = grd;
           c.stroke();
         }
-      }        
-	//c.restore();    
+      }
+	//c.restore();
 };
