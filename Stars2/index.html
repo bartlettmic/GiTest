@@ -26,10 +26,17 @@
 			<input id="lines"	type="range"   						min="0" 	 max="25"	value="5"> 
 			<input id="G"			 type="range"   						min="0" 	 max="500" value="200"> 
 			<font color="white">
-			<input type="checkbox" id="gravity" value="gravity">Gravity
-			<input type="checkbox" id="showDots" value="showDots">Dots
-			<input type="checkbox" id="tether" value="tether">Viscosity 
-					</font>
+				<input type="checkbox" id="gravity" value="gravity">Gravity
+				<input type="checkbox" id="tether" value="tether">Viscosity 
+				<select>
+					<option value="volvo">Lines (square)</option>
+					<option value="saab">Lines (round)</option>
+					<option value="opel">Circles</option>
+					<option value="audi">Triangles</option>
+					<option value="audi">Arrowheads</option>
+				</select>
+				<!-- <input type="checkbox" id="showDots" value="showDots">Dots -->
+			</font>
 		</aside>
 		<section id="canvas" />
 	</main>
