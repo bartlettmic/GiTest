@@ -107,7 +107,7 @@ $(function() {
 
     context.font = '10px sans-serif';
 	  context.fillStyle="white";
-	  context.fillText(fps+" FPS",5,window.innerHeight-5);
+	  context.fillText(fps+" Hz",5,window.innerHeight-5);
 
     for (var i = 0; i < dots.length; i++) dots[i].update();
 	  for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
