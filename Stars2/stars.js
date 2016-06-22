@@ -1,15 +1,12 @@
 /*		#TO-DO#
 • Gravity
-• Dropdown for different rendering
-  ► round or square ends
-  ► circles
-  ► triangles
-  ► ????
 • Text feedback for sliders – hovering JS text?
 • Click to add dot (increase max value)
-• Fade triangles better
 ▲ Make sure checkbox speedbug is fixed on merge
-▲ Make sure slider functional is kept on merge
+▲ Make sure slider functionality is kept on merge
+
+▲▲▲▲▲▲▲ Preserve minDiv flip from Triangles
+
 */
 
   mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
