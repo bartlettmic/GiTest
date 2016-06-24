@@ -81,6 +81,10 @@ $(function() {
       else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
   }
   });
+  
+  $('select').change(function(e) {
+    console.log(e.target.id+" : "+e.target.value)
+  });
 })
 
 
