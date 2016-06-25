@@ -2,6 +2,7 @@
 • Gravity
 • Text feedback for sliders – hovering JS text?
 • Click to add dot (increase max value)
+• Voronoi visual
 */
 
   mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
@@ -14,8 +15,7 @@
   maxRadius = maxDist * Math.sqrt(3) / 3,
   speed = 0.25,
   thick = 3.5,
-  //lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
-  lines = 10,
+  lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
   G = 200,
   gravity = false,
   tether = false,
