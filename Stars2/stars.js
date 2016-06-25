@@ -2,30 +2,21 @@
 • Gravity
 • Text feedback for sliders – hovering JS text?
 • Click to add dot (increase max value)
-▲ Make sure checkbox speedbug is fixed on merge
-▲ Make sure slider functionality is kept on merge
-
-▲▲▲▲▲▲▲ Preserve maxDiv flip from Triangles
-
 */
 
   mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
   canvas = document.createElement('canvas'),
   context = canvas.getContext('2d'),
   dots = [],
-  //FPS = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 30 : 60,
   stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50,
-  //maxDist = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 75 : 100,
-  maxDiv = -4,
+  maxDiv = -11.5,
   maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv,
   maxRadius = maxDist * Math.sqrt(3) / 3,
   speed = 0.25,
   thick = 3.5,
-  //lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
-  lines = 10,
+  lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
   G = 200,
   gravity = false,
-  //showDots = false,
   tether = false,
   mode="s",
 
@@ -46,14 +37,10 @@ $(document).ready(function() {
     this.checked = window[this.id] ? window[this.id].toString() : "";
   });
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
-    //setInterval(loop, 1000 / FPS);
 });
 
 //update mouse position
-$(document).mousemove(function(e) {
-  //e.preventDefault();
-  mousePos = { x: e.clientX, y: e.clientY	};
-});
+$(document).mousemove(function(e) { mousePos = { x: e.clientX, y: e.clientY	}; });
 
 //Slider and checkbox updates
 $(function() {
@@ -88,14 +75,12 @@ $(function() {
   });
 
   $('select').change(function(e) {
-    //console.log(this.options[this.selectedIndex].text+" : "+e.target.value)
       mode = e.target.value;
       console.log(mode);
       mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
       mode == "t" || mode == "a" ? context.globalCompositeOperation = 'screen' : context.globalCompositeOperation = 'source-over';
   });
 })
-
 
 //Loop function
 ! function loop() {
@@ -105,7 +90,7 @@ $(function() {
 		date = new Date();
 		fps = frames;
 		frames = 0;
-    console.log(Math.random()*100+"   "+fps);
+    //console.log(Math.random()*100+"   "+fps);
 	}
 
     if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
