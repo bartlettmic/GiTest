@@ -24,8 +24,9 @@
   lines = 10,
   G = 200,
   gravity = false,
-  showDots = false,
+  //showDots = false,
   tether = false,
+  mode="s",
 
   frames = 0,
   fps = 0,
@@ -81,9 +82,12 @@ $(function() {
       else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
   }
   });
-  
+
   $('select').change(function(e) {
-    console.log(e.target.id+" : "+e.target.value)
+    //console.log(this.options[this.selectedIndex].text+" : "+e.target.value)
+      mode = e.target.value;
+      console.log(mode);
+      mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
   });
 })
 
@@ -165,11 +169,11 @@ Dot.prototype.friends = function() {
 };
 
 Dot.prototype.render = function(c) {
-    //c.save();
-    //c.globalCompositeOperation = 'soft-light';
-    //c.globalCompositeOperation = 'lighten';
+  //c.globalCompositeOperation = 'soft-light';
+  //c.globalCompositeOperation = 'lighten';
 
-    for (var i = 0; i < dots.length; i++) {
+  for (var i = 0; i < dots.length; i++) {
+    if (mode == "r" || mode == "s" || mode == "c") {
       if (lines > 0 && this.ids.size >= lines) break;
       if (this.id==i || dots[i].ids.has(this.id)) continue;
       var distance = Math.sqrt(Math.pow(this.pos.x - dots[i].pos.x, 2) + Math.pow(this.pos.y - dots[i].pos.y, 2));
@@ -185,30 +189,21 @@ Dot.prototype.render = function(c) {
       grd.addColorStop(0, s1);
       grd.addColorStop(1, s2);
 
-        //c.beginPath();
-        //c.arc(this.pos.x, this.pos.y, thick / 2, 0, 2 * Math.PI);
-        //c.fillStyle = s1;
-        //c.fill();
-
-        //c.beginPath();
-        //c.arc(dots[d].pos.x, dots[d].pos.y, thick / 2, 0, 2 * Math.PI);
-        //c.fillStyle = s2;
-        //c.fill();
-
-        if (showDots) {
-          c.beginPath();
-          c.arc((this.pos.x + dots[i].pos.x)/2, (this.pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
-          c.fillStyle = grd;
-          c.fill()
-        } else {
-          c.beginPath();
-          c.moveTo(this.pos.x, this.pos.y);
-          c.lineTo(dots[i].pos.x, dots[i].pos.y);
-          c.lineWidth = thick;
-          c.lineCap = "round";
-          c.strokeStyle = grd;
-          c.stroke();
-        }
+      if (mode == "c") {
+        c.beginPath();
+        c.arc((this.pos.x + dots[i].pos.x)/2, (this.pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
+        c.fillStyle = grd;
+        c.fill()
       }
-	//c.restore();
+      else {
+        c.beginPath();
+        c.moveTo(this.pos.x, this.pos.y);
+        c.lineTo(dots[i].pos.x, dots[i].pos.y);
+        c.lineWidth = thick;
+        //mode == "r" ? c.lineCap = "round" : c.lineCap = "square";
+        c.strokeStyle = grd;
+        c.stroke();
+      }
+    }
+  }
 };
