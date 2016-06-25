@@ -38,6 +38,14 @@ $(document).ready(function() {
     this.checked = window[this.id] ? window[this.id].toString() : "";
   });
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
+  var ua = navigator.userAgent;
+  var isiPad = /iPad/i.test(ua) || /iPhone OS 3_1_2/i.test(ua) || /iPhone OS 3_2_2/i.test(ua);
+  if (isiPad){
+    var find = 'javascript:;';
+    var re = new RegExp(find, 'g');
+
+    document.body.innerHTML = document.body.innerHTML.replace(re, 'javascript:void(0);');
+  }
 });
 
 //update mouse position
@@ -109,7 +117,6 @@ $(function() {
 
     for (var i = 0; i < dots.length; i++) dots[i].update();
 	  for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
-    //for (var i = 0; i < dots.length; i++) dots[i].render(context);
     render(context);
     setTimeout(loop, 0);
 }();
@@ -129,7 +136,7 @@ function Dot(ID) {
     this.b = Math.round(Math.random() * 255);
     this.id = ID;
     this.ids = new Set();
-  }
+}
 
 //Update Dot's position
 Dot.prototype.update = function() {
