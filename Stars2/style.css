@@ -48,7 +48,3 @@ input[type="checkbox"] {
   /* This is to see the canvas for debugging. */
   background: 100%;
 }
-
-#minDiv{
-    transform: rotateY(180deg);
-}
