@@ -77,19 +77,19 @@ $(function() {
 
     $('body').css("background",bg ? "white" : "black");
     $('a:link').css("color",bg ? "black" : "white");
-    $('a:hover').css('color','#f80');
-    $('input[type=checkbox] + label').css('color',bg ? "black" : "#ccc");
+    $('input[type=checkbox] + label').css('color',bg ? "slateGray" : "#ccc");
     $('input[type=checkbox]:checked + label').css('color','#f80');
 
     console.log(e.target.id + " -> " + window[e.target.id]);
-
   });
+
+  $('a').hover(function() { $('a:hover').css('color','#f80'); }, function() { $('a:link').css("color",bg ? "black" : "white"); });
 
   $('select').change(function(e) {
     mode = e.target.value;
     console.log(mode);
     mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
-    mode == "t" || mode == "a" ? context.globalCompositeOperation = 'screen' : context.globalCompositeOperation = 'source-over';
+    //mode == "t" || mode == "a" ? context.globalCompositeOperation = 'lighten' : context.globalCompositeOperation = 'source-over';
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
 })
