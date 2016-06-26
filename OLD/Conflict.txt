@@ -1,3 +1,0 @@
-This file should conflict
-Specifically this line should conflict!
-That's all

@@ -1,6 +1,0 @@
-This is merely a list:
-a list of things not containing penguins please!
-shoes
-yo-yo
-glue
-arbitrary object of some sort
