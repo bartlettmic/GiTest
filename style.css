@@ -70,3 +70,13 @@ a {
   color:white;
   text-decoration:none
 }
+
+select {
+  background: transparent;
+  color: white;
+}
+
+option {
+  background: transparent;
+  color: black;
+}
