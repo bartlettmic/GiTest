@@ -19,6 +19,7 @@
   G = 200,
   gravity = false,
   tether = false,
+  bg = false,
   mode="s",
 
   frames = 0,
@@ -57,8 +58,8 @@ $(function() {
     console.log(e.target.id + " -> " + e.target.value);
 
     if (e.target.id == 'maxDiv') {
-        maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
-        maxRadius = maxDist * Math.sqrt(3) / 3;
+      maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
+      maxRadius = maxDist * Math.sqrt(3) / 3;
     }
 
     if (stars < dots.length) {
@@ -72,14 +73,24 @@ $(function() {
     if (e.target.id == 'tether') {
       if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
       else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
-  }
+    }
+
+    $('body').css("background",bg ? "white" : "black");
+    $('a:link').css("color",bg ? "black" : "white");
+    $('a:hover').css('color','#f80');
+    $('input[type=checkbox] + label').css('color',bg ? "black" : "#ccc");
+    $('input[type=checkbox]:checked + label').css('color','#f80');
+
+    console.log(e.target.id + " -> " + window[e.target.id]);
+
   });
 
   $('select').change(function(e) {
-      mode = e.target.value;
-      console.log(mode);
-      mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
-      mode == "t" || mode == "a" ? context.globalCompositeOperation = 'screen' : context.globalCompositeOperation = 'source-over';
+    mode = e.target.value;
+    console.log(mode);
+    mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
+    mode == "t" || mode == "a" ? context.globalCompositeOperation = 'screen' : context.globalCompositeOperation = 'source-over';
+    console.log(e.target.id + " -> " + window[e.target.id]);
   });
 })
 
@@ -104,7 +115,7 @@ $(function() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.font = '10px sans-serif';
-	  context.fillStyle="white";
+	  context.fillStyle=bg ? "black" : "white";
 	  context.fillText(fps+" Hz",5,window.innerHeight-5);
 
     for (var i = 0; i < dots.length; i++) dots[i].update();
