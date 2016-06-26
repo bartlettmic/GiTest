@@ -34,10 +34,27 @@ input[type="range"] {
   background: transparent;
 }
 
-input[type="checkbox"] {
-  /* Setting flex grow causes these to expand as big as they can get. */
-  min-width: 15px;
-  max-width: 15px;
+input[type=checkbox] + label {
+  margin-left:0.5em;
+  color: #ccc;
+  font-family:monospace;
+  /*font-style: normal;*/
+}
+input[type=checkbox]:checked + label {
+  color: #f80;
+  font-family:monospace;
+  /*font-weight: 900;*/
+}
+input[type=checkbox] {
+  display: none;
+}
+#bg + label::before {
+  color: black;
+  content:"White";
+}
+#bg:checked + label::before {
+  color: white;
+  content:"Black";
 }
 
 /* Eventually the canvas, I suppose. */

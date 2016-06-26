@@ -38,14 +38,6 @@ $(document).ready(function() {
     this.checked = window[this.id] ? window[this.id].toString() : "";
   });
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
-  var ua = navigator.userAgent;
-  var isiPad = /iPad/i.test(ua) || /iPhone OS 3_1_2/i.test(ua) || /iPhone OS 3_2_2/i.test(ua);
-  if (isiPad){
-    var find = 'javascript:;';
-    var re = new RegExp(find, 'g');
-
-    document.body.innerHTML = document.body.innerHTML.replace(re, 'javascript:void(0);');
-  }
 });
 
 //update mouse position
