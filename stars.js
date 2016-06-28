@@ -1,30 +1,36 @@
 /*		#TO-DO#
 • Gravity
+• Squares using lines as diagnol
 • Text feedback for sliders – hovering JS text?
 • Click to add dot (increase max value)
 • Voronoi visual
+• Rainbow or Monochrome option for dots
+• Configuration export and import?
+• Dropdown-menu text with background
+
+⚠ Fix on iOS
 */
 
-  mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-  canvas = document.createElement('canvas'),
-  context = canvas.getContext('2d'),
-  dots = [],
-  stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50,
-  maxDiv = -11.5,
-  maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv,
-  maxRadius = maxDist * Math.sqrt(3) / 3,
-  speed = 0.25,
-  thick = 3.5,
-  lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
-  G = 200,
-  gravity = false,
-  tether = false,
-  bg = false,
-  mode="s",
+mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+canvas = document.createElement('canvas'),
+context = canvas.getContext('2d'),
+dots = [],
+stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50,
+maxDiv = -11.5,
+maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv,
+maxRadius = maxDist * Math.sqrt(3) / 3,
+speed = 0.25,
+thick = 3.5,
+lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
+G = 200,
+gravity = false,
+tether = false,
+bg = false,
+mode="l",
 
-  frames = 0,
-  fps = 0,
-  date = new Date();
+frames = 0,
+fps = 0,
+date = new Date();
 
 
 //Initialize
@@ -77,51 +83,53 @@ $(function() {
 
     $('body').css("background",bg ? "white" : "black");
     $('a:link').css("color",bg ? "black" : "white");
-    $('input[type=checkbox] + label').css('color',bg ? "slateGray" : "#ccc");
+    $('input[type=checkbox] + label').css('color',bg ? "#333" : "#ccc");
     $('input[type=checkbox]:checked + label').css('color','#f80');
+    $('select').css('color',bg ? "black" : 'white');
 
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
 
-  $('a').hover(function() { $('a:hover').css('color','#f80'); }, function() { $('a:link').css("color",bg ? "black" : "white"); });
+  $('a').hover(function() { $('a').css('color','#f80'); }, function() { $('a').css("color",bg ? "black" : "white"); });
 
   $('select').change(function(e) {
     mode = e.target.value;
     console.log(mode);
     mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
-    //mode == "t" || mode == "a" ? context.globalCompositeOperation = 'lighten' : context.globalCompositeOperation = 'source-over';
+    mode == "t" || mode == "a" ? (context.globalCompositeOperation = 'lighten', document.getElementById("thick").disabled = true) : (context.globalCompositeOperation = 'source-over', document.getElementById("thick").disabled = false);
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
 })
 
 //Loop function
 ! function loop() {
-    // update screen size
-	frames++;
-	if (new Date()-date >= 1000) {
-		date = new Date();
-		fps = frames;
-		frames = 0;
+  // update screen size
+  frames++;
+  if (new Date()-date >= 1000) {
+    date = new Date();
+    fps = frames;
+    frames = 0;
     //console.log(Math.random()*100+"   "+fps);
-	}
+  }
 
-    if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
-      maxRadius = maxDist * Math.sqrt(3) / 3;
-    }
+  if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
+    maxRadius = maxDist * Math.sqrt(3) / 3;
+  }
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.font = '10px sans-serif';
-	  context.fillStyle=bg ? "black" : "white";
-	  context.fillText(fps+" Hz",5,window.innerHeight-5);
+  for (var i = 0; i < dots.length; i++) dots[i].update();
+  for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
+  render(context);
 
-    for (var i = 0; i < dots.length; i++) dots[i].update();
-	  for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
-    render(context);
-    setTimeout(loop, 0);
+  context.font = '10px sans-serif';
+  context.fillStyle=bg ? "black" : "white";
+  context.fillText(fps+" Hz",5,window.innerHeight-5);
+
+  setTimeout(loop, 0);
 }();
 
 //Dot class constructor
@@ -139,67 +147,75 @@ function Dot(ID) {
     this.b = Math.round(Math.random() * 255);
     this.id = ID;
     this.ids = new Set();
-}
-
-//Update Dot's position
-Dot.prototype.update = function() {
-  if (tether && this.ids.size > 0) {
-    X = this.vel.x, Y = this.vel.y;
-    for (let d of this.ids) {
-      if (!dots[d]) break;
-      X += dots[d].vel.x;
-      Y += dots[d].vel.y;
-    }
-    X /= (this.ids.size + 1);
-    Y /= (this.ids.size + 1);
-    this.pos.x += (4 * X + this.vel.x) / 5;
-    this.pos.y += (4 * Y + this.vel.y) / 5;
-  } else {
-    this.pos.x += this.vel.x;
-    this.pos.y += this.vel.y;
   }
-  if (this.pos.x <= 0) this.vel.x *= (this.vel.x > 0 ? 1 : -1);
-  if (this.pos.x >= window.innerWidth) { this.vel.x *= (this.vel.x < 0 ? 1 : -1); this.pos.x = window.innerWidth; }
-  if (this.pos.y <= 0) this.vel.y *= (this.vel.y > 0 ? 1 : -1);
-  if (this.pos.y >= window.innerHeight) { this.vel.y *= (this.vel.y < 0 ? 1 : -1); this.pos.y = window.innerHeight; }
-};
 
-//Dot.prototype.render = function(c) {
-function render(c) {
-  for (var j = 0; j < dots.length; j++) {
-    if (lines > 0 && dots[j].ids.size >= lines) continue;
-    for (var i = j+1; i < dots.length; i++) {
-      if (dots[j].id==i || dots[i].ids.has(dots[j].id)) continue;
-      var distance = Math.sqrt(Math.pow(dots[j].pos.x - dots[i].pos.x, 2) + Math.pow(dots[j].pos.y - dots[i].pos.y, 2));
-      if (distance > maxDist) continue;
-      dots[j].ids.add(i);
-      dots[i].ids.add(dots[j].id);
-
-      if (mode == "s" || mode == "r" || mode == "c") {
-        var grd = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, dots[i].pos.x, dots[i].pos.y),
-        s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + 1.1 * (1 - (distance / maxDist)) + ")",
-        s2 = 'rgba(' + dots[i].r + ',' + dots[i].g + ',' + dots[i].b + ',' + 1.1 * (1 - (distance / maxDist)) + ')';
-
-        grd.addColorStop(0, s1);
-        grd.addColorStop(1, s2);
-
-        if (mode == "c") {
-          c.beginPath();
-          c.arc((dots[j].pos.x + dots[i].pos.x)/2, (dots[j].pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
-          c.fillStyle = grd;
-          c.fill()
-        }
-        else {
-          c.beginPath();
-          c.moveTo(dots[j].pos.x, dots[j].pos.y);
-          c.lineTo(dots[i].pos.x, dots[i].pos.y);
-          c.lineWidth = thick;
-          c.strokeStyle = grd;
-          c.stroke();
-        }
+  //Update Dot's position
+  Dot.prototype.update = function() {
+    if (tether && this.ids.size > 0) {
+      X = this.vel.x, Y = this.vel.y;
+      for (let d of this.ids) {
+        if (!dots[d]) break;
+        X += dots[d].vel.x;
+        Y += dots[d].vel.y;
       }
+      X /= (this.ids.size + 1);
+      Y /= (this.ids.size + 1);
+      this.pos.x += (4 * X + this.vel.x) / 5;
+      this.pos.y += (4 * Y + this.vel.y) / 5;
+    } else {
+      this.pos.x += this.vel.x;
+      this.pos.y += this.vel.y;
+    }
+    if (this.pos.x <= 0) this.vel.x = Math.abs(this.vel.x);
+    if (this.pos.x >= window.innerWidth) { this.vel.x *= (this.vel.x < 0 ? 1 : -1); this.pos.x = window.innerWidth; }
+    if (this.pos.y <= 0) this.vel.y = Math.abs(this.vel.y);
+    if (this.pos.y >= window.innerHeight) { this.vel.y *= (this.vel.y < 0 ? 1 : -1); this.pos.y = window.innerHeight; }
+  };
 
-      else if (mode == 't' | mode == 'a') {
+  function render(c) {
+    for (var j = 0; j < dots.length; j++) {
+      if (lines > 0 && dots[j].ids.size >= lines) continue;
+      for (var i = j+1; i < dots.length; i++) {
+        if (dots[j].id==i || dots[i].ids.has(dots[j].id)) continue;
+        var distance = Math.sqrt(Math.pow(dots[j].pos.x - dots[i].pos.x, 2) + Math.pow(dots[j].pos.y - dots[i].pos.y, 2));
+        if (distance > maxDist) continue;
+        dots[j].ids.add(i);
+        dots[i].ids.add(dots[j].id);
+
+        if (mode == "l" || mode == "r" || mode == "c" || mode == 's') {
+          var grd = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, dots[i].pos.x, dots[i].pos.y),
+          s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + 1.1 * (1 - (distance / maxDist)) + ")",
+          s2 = 'rgba(' + dots[i].r + ',' + dots[i].g + ',' + dots[i].b + ',' + 1.1 * (1 - (distance / maxDist)) + ')';
+
+          grd.addColorStop(0, s1);
+          grd.addColorStop(1, s2);
+
+          if (mode == "c") {
+            c.beginPath();
+            c.arc((dots[j].pos.x + dots[i].pos.x)/2, (dots[j].pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
+            c.fillStyle = grd;
+            c.fill()
+          }
+          else if (mode == 's') {
+            c.beginPath();
+            c.moveTo(dots[j].pos.x, dots[j].pos.y);
+            c.lineTo(dots[i].pos.x, dots[j].pos.y);
+            c.lineTo(dots[i].pos.x, dots[i].pos.y);
+            c.lineTo(dots[j].pos.x, dots[i].pos.y);
+            c.fillStyle = grd;
+            c.fill()
+          }
+          else {
+            c.beginPath();
+            c.moveTo(dots[j].pos.x, dots[j].pos.y);
+            c.lineTo(dots[i].pos.x, dots[i].pos.y);
+            c.lineWidth = thick;
+            c.strokeStyle = grd;
+            c.stroke();
+          }
+        }
+
+        else if (mode == 't' | mode == 'a') {
           for (var z=i+1; z<dots.length; z++) {
             if (lines > 0 && dots[z].ids.size > lines) continue;
             if (Math.sqrt(Math.pow(dots[z].pos.x - dots[i].pos.x, 2) + Math.pow(dots[z].pos.y - dots[i].pos.y, 2)) > maxDist || Math.sqrt(Math.pow(dots[z].pos.x - dots[j].pos.x, 2) + Math.pow(dots[z].pos.y - dots[j].pos.y, 2)) > maxDist) continue;
@@ -214,29 +230,33 @@ function render(c) {
             if (center.C > maxRadius) continue;
 
             var AB = { x: (dots[j].pos.x + dots[i].pos.x) / 2, y: (dots[j].pos.y + dots[i].pos.y) / 2 },
-                BC = { x: (dots[i].pos.x + dots[z].pos.x) / 2, y: (dots[i].pos.y + dots[z].pos.y) / 2 },
-                CA = { x: (dots[z].pos.x + dots[j].pos.x) / 2, y: (dots[z].pos.y + dots[j].pos.y) / 2 },
+            BC = { x: (dots[i].pos.x + dots[z].pos.x) / 2, y: (dots[i].pos.y + dots[z].pos.y) / 2 },
+            CA = { x: (dots[z].pos.x + dots[j].pos.x) / 2, y: (dots[z].pos.y + dots[j].pos.y) / 2 },
 
-                gA = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, BC.x, BC.y),
-                gB = c.createLinearGradient(dots[i].pos.x, dots[i].pos.y, CA.x, CA.y),
-                gC = c.createLinearGradient(dots[z].pos.x, dots[z].pos.y, AB.x, AB.y),
+            gA = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, BC.x, BC.y),
+            gB = c.createLinearGradient(dots[i].pos.x, dots[i].pos.y, CA.x, CA.y),
+            gC = c.createLinearGradient(dots[z].pos.x, dots[z].pos.y, AB.x, AB.y),
 
-                alphaA = 1-(center.A/maxRadius),
-                alphaB = 1-(center.B/maxRadius),
-                alphaC = 1-(center.C/maxRadius);
+            alphaA = 1-(center.A/maxRadius),
+            alphaB = 1-(center.B/maxRadius),
+            alphaC = 1-(center.C/maxRadius);
 
             if (alphaA > .5) alphaA *= (alphaA-.5)+1;
             if (alphaB > .5) alphaB *= (alphaB-.5)+1;
             if (alphaC > .5) alphaC *= (alphaC-.5)+1;
 
-            alphaA *= Math.min(alphaA, alphaB, alphaC);
-            alphaC *= Math.min(alphaA, alphaB, alphaC);
-            alphaB *= Math.min(alphaA, alphaB, alphaC);
+            var min = Math.min(alphaA, alphaB, alphaC);
+            // if (alphaA != min) alphaA *= min;
+            // if (alphaC != min) alphaC *= min;
+            // if (alphaB != min) alphaB *= min;
+            alphaA *= min;
+            alphaB *= min;
+            alphaC *= min;
 
             var cA = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + alphaA + ")",
-                cB = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + "," + alphaB + ")",
-                cC = "rgba(" + dots[z].r + "," + dots[z].g + "," + dots[z].b + "," + alphaC + ")",
-                c0 = "rgba(0,0,0,0)";
+            cB = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + "," + alphaB + ")",
+            cC = "rgba(" + dots[z].r + "," + dots[z].g + "," + dots[z].b + "," + alphaC + ")",
+            c0 = "rgba(0,0,0,0)";
 
             gA.addColorStop(0, cA);
             gA.addColorStop(1, c0);

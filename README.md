@@ -1,4 +1,4 @@
-# GiTest
+# Topaz
 
 ####Stars:
 http://rawgit.com/bartlettmic/Topaz/master/index.html
