@@ -89,8 +89,8 @@ $(function() {
     $('a:link').css("color",bg ? "black" : "white");
     $('input[type=checkbox] + label').css('color',bg ? "#333" : "#ccc");
     $('input[type=checkbox]:checked + label').css('color','#f80');
-    $('select').css('color',bg ? "black" : 'white');
-    $('option').css('color',bg ? "black" : 'white');
+    // $('select').css('color',bg ? "black" : 'white');
+    // $('option').css('color',bg ? "black" : 'white');
 
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
@@ -100,7 +100,9 @@ $(function() {
   $('select').change(function(e) {
     mode = e.target.value;
     console.log(mode);
-    mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
+    context.lineWidth = thick;
+    if (mode == "r") context.lineCap = "round";
+    else context.lineCap = "square";
     mode == "t" || mode == "a" ? (context.globalCompositeOperation = 'lighten', document.getElementById("thick").disabled = true) : (context.globalCompositeOperation = 'source-over', document.getElementById("thick").disabled = false);
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
@@ -203,6 +205,29 @@ function render(c) {
           if (mode == 'c') { c.fillStyle = grd; c.fill(); }
           else { c.strokeStyle = grd; c.stroke();}
         }
+        else if (mode.charAt(0) == 'q') {
+          var center = { x: (dots[j].pos.x + dots[i].pos.x)/2, y: (dots[j].pos.y + dots[i].pos.y)/2 },
+              delta = { x:Math.abs(dots[j].pos.x - dots[i].pos.x)/2, y: Math.abs(dots[j].pos.y - dots[i].pos.y)/2 };
+          c.beginPath();
+          c.moveTo(dots[j].pos.x, dots[j].pos.y);
+          c.lineTo(center.x - delta.y, center.y + delta.x);
+          c.lineTo(dots[i].pos.x, dots[i].pos.y);
+          c.lineTo(center.x + delta.y, center.y - delta.x);
+          if (mode == 'q') { c.fillStyle = grd; c.fill(); }
+          else { c.lineTo(dots[j].pos.x, dots[j].pos.y); c.strokeStyle = grd; c.stroke();}
+          // c.closePath();
+          // c.beginPath();
+          // c.arc(center.x - delta.x, center.y - delta.y, 6, 0, 2* Math.PI);
+          // c.arc(center.x + delta.x, center.y + delta.y, 6, 0, 2* Math.PI);
+          // c.fillStyle = "white";
+          // c.fill();
+          // c.closePath();
+          // c.beginPath();
+          // c.arc(dots[j].pos.x, dots[j].pos.y, 6, 0, 2* Math.PI);
+          // c.arc(dots[i].pos.x, dots[i].pos.y, 6, 0, 2* Math.PI);
+          // c.fillStyle = "orange";
+          // c.fill();
+        }
         else if (mode.charAt(0) == 's') {
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);
@@ -216,7 +241,6 @@ function render(c) {
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);
           c.lineTo(dots[i].pos.x, dots[i].pos.y);
-          //c.lineWidth = thick;
           c.strokeStyle = grd;
           c.stroke();
         }
@@ -227,7 +251,7 @@ function render(c) {
           if (lines > 0 && dots[z].ids.size > lines) continue;
           if (Math.sqrt(Math.pow(dots[z].pos.x - dots[i].pos.x, 2) + Math.pow(dots[z].pos.y - dots[i].pos.y, 2)) > maxDist || Math.sqrt(Math.pow(dots[z].pos.x - dots[j].pos.x, 2) + Math.pow(dots[z].pos.y - dots[j].pos.y, 2)) > maxDist) continue;
 
-          center = { x: (dots[j].pos.x + dots[i].pos.x + dots[z].pos.x) / 3, y: (dots[j].pos.y + dots[i].pos.y + dots[z].pos.y) / 3, A:this.x, B:0, C:0 };
+          var center = { x: (dots[j].pos.x + dots[i].pos.x + dots[z].pos.x) / 3, y: (dots[j].pos.y + dots[i].pos.y + dots[z].pos.y) / 3, A:this.x, B:0, C:0 };
 
           center.A = Math.sqrt(Math.pow(dots[j].pos.x - center.x, 2) + Math.pow(dots[j].pos.y - center.y, 2));
           if (center.A > maxRadius) continue;
