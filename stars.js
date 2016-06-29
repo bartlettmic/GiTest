@@ -45,7 +45,9 @@ $(document).ready(function() {
     this.checked = window[this.id] ? window[this.id].toString() : "";
   });
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
+  context.lineWidth = thick;
 });
+
 
 //update mouse position
 $(document).mousemove(function(e) { mousePos = { x: e.clientX, y: e.clientY	}; });
@@ -67,6 +69,8 @@ $(function() {
       maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
       maxRadius = maxDist * Math.sqrt(3) / 3;
     }
+
+    if (e.target.id == 'thick') context.lineWidth = thick;
 
     if (stars < dots.length) {
       dots = dots.slice(0, stars);
@@ -103,7 +107,7 @@ $(function() {
 
 //Loop function
 ! function loop() {
-  // update screen size
+
   frames++;
   if (new Date()-date >= 1000) {
     date = new Date();
@@ -112,9 +116,11 @@ $(function() {
     //console.log(Math.random()*100+"   "+fps);
   }
 
+  // update screen size
   if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    context.lineWidth = thick;
     maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
     maxRadius = maxDist * Math.sqrt(3) / 3;
   }
@@ -138,19 +144,19 @@ function Dot(ID) {
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight
   };
-  this.vel = {
-    x: Math.random() * speed * (Math.round(Math.random()) ? 1 : -1), y: 0 };
-    //this.vel.y = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1);
-    this.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(this.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
-    this.r = Math.round(Math.random() * 255);
-    this.g = Math.round(Math.random() * 255);
-    this.b = Math.round(Math.random() * 255);
-    this.id = ID;
-    this.ids = new Set();
-  }
+  this.vel = { x: Math.random() * speed * (Math.round(Math.random()) ? 1 : -1), y: 0 };
+  //this.vel.y = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1);
+  this.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(this.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
+  this.r = Math.round(Math.random() * 255);
+  this.g = Math.round(Math.random() * 255);
+  this.b = Math.round(Math.random() * 255);
+  this.id = ID;
+  this.ids = new Set();
+  if ((this.r+this.g+this.b)/3 < 50) this.r=255, this.g=64, this.b = 0;
+}
 
   //Update Dot's position
-  Dot.prototype.update = function() {
+Dot.prototype.update = function() {
     if (tether && this.ids.size > 0) {
       X = this.vel.x, Y = this.vel.y;
       for (let d of this.ids) {
@@ -170,118 +176,118 @@ function Dot(ID) {
     if (this.pos.x >= window.innerWidth) { this.vel.x *= (this.vel.x < 0 ? 1 : -1); this.pos.x = window.innerWidth; }
     if (this.pos.y <= 0) this.vel.y = Math.abs(this.vel.y);
     if (this.pos.y >= window.innerHeight) { this.vel.y *= (this.vel.y < 0 ? 1 : -1); this.pos.y = window.innerHeight; }
-  };
+};
 
-  function render(c) {
-    for (var j = 0; j < dots.length; j++) {
-      if (lines > 0 && dots[j].ids.size >= lines) continue;
-      for (var i = j+1; i < dots.length; i++) {
-        if (dots[j].id==i || dots[i].ids.has(dots[j].id)) continue;
-        var distance = Math.sqrt(Math.pow(dots[j].pos.x - dots[i].pos.x, 2) + Math.pow(dots[j].pos.y - dots[i].pos.y, 2));
-        if (distance > maxDist) continue;
-        dots[j].ids.add(i);
-        dots[i].ids.add(dots[j].id);
+function render(c) {
+  for (var j = 0; j < dots.length; j++) {
+    if (lines > 0 && dots[j].ids.size >= lines) continue;
+    for (var i = j+1; i < dots.length; i++) {
+      if (dots[j].id==i || dots[i].ids.has(dots[j].id)) continue;
+      var distance = Math.sqrt(Math.pow(dots[j].pos.x - dots[i].pos.x, 2) + Math.pow(dots[j].pos.y - dots[i].pos.y, 2));
+      if (distance > maxDist) continue;
+      dots[j].ids.add(i);
+      dots[i].ids.add(dots[j].id);
 
-        if (mode == "l" || mode == "r" || mode == "c" || mode == 's') {
-          var grd = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, dots[i].pos.x, dots[i].pos.y),
-          s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + 1.1 * (1 - (distance / maxDist)) + ")",
-          s2 = 'rgba(' + dots[i].r + ',' + dots[i].g + ',' + dots[i].b + ',' + 1.1 * (1 - (distance / maxDist)) + ')';
+      if (mode != 't' && mode != 'a') {
+        var grd = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, dots[i].pos.x, dots[i].pos.y),
+        s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + 1.1 * (1 - (distance / maxDist)) + ")",
+        s2 = 'rgba(' + dots[i].r + ',' + dots[i].g + ',' + dots[i].b + ',' + 1.1 * (1 - (distance / maxDist)) + ')';
 
-          grd.addColorStop(0, s1);
-          grd.addColorStop(1, s2);
+        grd.addColorStop(0, s1);
+        grd.addColorStop(1, s2);
 
-          if (mode == "c") {
-            c.beginPath();
-            c.arc((dots[j].pos.x + dots[i].pos.x)/2, (dots[j].pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
-            c.fillStyle = grd;
-            c.fill()
-          }
-          else if (mode == 's') {
-            c.beginPath();
-            c.moveTo(dots[j].pos.x, dots[j].pos.y);
-            c.lineTo(dots[i].pos.x, dots[j].pos.y);
-            c.lineTo(dots[i].pos.x, dots[i].pos.y);
-            c.lineTo(dots[j].pos.x, dots[i].pos.y);
-            c.fillStyle = grd;
-            c.fill()
-          }
-          else {
-            c.beginPath();
-            c.moveTo(dots[j].pos.x, dots[j].pos.y);
-            c.lineTo(dots[i].pos.x, dots[i].pos.y);
-            c.lineWidth = thick;
-            c.strokeStyle = grd;
-            c.stroke();
-          }
+        if (mode == "c" || mode == "cm") {
+          c.beginPath();
+          c.arc((dots[j].pos.x + dots[i].pos.x)/2, (dots[j].pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
+          if (mode == 'c') { c.fillStyle = grd; c.fill(); }
+          else { c.strokeStyle = grd; c.stroke();}
         }
+        else if (mode == 's') {
+          c.beginPath();
+          c.moveTo(dots[j].pos.x, dots[j].pos.y);
+          c.lineTo(dots[i].pos.x, dots[j].pos.y);
+          c.lineTo(dots[i].pos.x, dots[i].pos.y);
+          c.lineTo(dots[j].pos.x, dots[i].pos.y);
+          c.fillStyle = grd;
+          c.fill()
+        }
+        else {
+          c.beginPath();
+          c.moveTo(dots[j].pos.x, dots[j].pos.y);
+          c.lineTo(dots[i].pos.x, dots[i].pos.y);
+          //c.lineWidth = thick;
+          c.strokeStyle = grd;
+          c.stroke();
+        }
+      }
 
-        else if (mode == 't' | mode == 'a') {
-          for (var z=i+1; z<dots.length; z++) {
-            if (lines > 0 && dots[z].ids.size > lines) continue;
-            if (Math.sqrt(Math.pow(dots[z].pos.x - dots[i].pos.x, 2) + Math.pow(dots[z].pos.y - dots[i].pos.y, 2)) > maxDist || Math.sqrt(Math.pow(dots[z].pos.x - dots[j].pos.x, 2) + Math.pow(dots[z].pos.y - dots[j].pos.y, 2)) > maxDist) continue;
+      else {
+        for (var z=i+1; z<dots.length; z++) {
+          if (lines > 0 && dots[z].ids.size > lines) continue;
+          if (Math.sqrt(Math.pow(dots[z].pos.x - dots[i].pos.x, 2) + Math.pow(dots[z].pos.y - dots[i].pos.y, 2)) > maxDist || Math.sqrt(Math.pow(dots[z].pos.x - dots[j].pos.x, 2) + Math.pow(dots[z].pos.y - dots[j].pos.y, 2)) > maxDist) continue;
 
-            center = { x: (dots[j].pos.x + dots[i].pos.x + dots[z].pos.x) / 3, y: (dots[j].pos.y + dots[i].pos.y + dots[z].pos.y) / 3, A:this.x, B:0, C:0 };
+          center = { x: (dots[j].pos.x + dots[i].pos.x + dots[z].pos.x) / 3, y: (dots[j].pos.y + dots[i].pos.y + dots[z].pos.y) / 3, A:this.x, B:0, C:0 };
 
-            center.A = Math.sqrt(Math.pow(dots[j].pos.x - center.x, 2) + Math.pow(dots[j].pos.y - center.y, 2));
-            if (center.A > maxRadius) continue;
-            center.B = Math.sqrt(Math.pow(dots[i].pos.x - center.x, 2) + Math.pow(dots[i].pos.y - center.y, 2));
-            if (center.B > maxRadius) continue;
-            center.C = Math.sqrt(Math.pow(dots[z].pos.x - center.x, 2) + Math.pow(dots[z].pos.y - center.y, 2));
-            if (center.C > maxRadius) continue;
+          center.A = Math.sqrt(Math.pow(dots[j].pos.x - center.x, 2) + Math.pow(dots[j].pos.y - center.y, 2));
+          if (center.A > maxRadius) continue;
+          center.B = Math.sqrt(Math.pow(dots[i].pos.x - center.x, 2) + Math.pow(dots[i].pos.y - center.y, 2));
+          if (center.B > maxRadius) continue;
+          center.C = Math.sqrt(Math.pow(dots[z].pos.x - center.x, 2) + Math.pow(dots[z].pos.y - center.y, 2));
+          if (center.C > maxRadius) continue;
 
-            var AB = { x: (dots[j].pos.x + dots[i].pos.x) / 2, y: (dots[j].pos.y + dots[i].pos.y) / 2 },
-            BC = { x: (dots[i].pos.x + dots[z].pos.x) / 2, y: (dots[i].pos.y + dots[z].pos.y) / 2 },
-            CA = { x: (dots[z].pos.x + dots[j].pos.x) / 2, y: (dots[z].pos.y + dots[j].pos.y) / 2 },
+          var AB = { x: (dots[j].pos.x + dots[i].pos.x) / 2, y: (dots[j].pos.y + dots[i].pos.y) / 2 },
+          BC = { x: (dots[i].pos.x + dots[z].pos.x) / 2, y: (dots[i].pos.y + dots[z].pos.y) / 2 },
+          CA = { x: (dots[z].pos.x + dots[j].pos.x) / 2, y: (dots[z].pos.y + dots[j].pos.y) / 2 },
 
-            gA = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, BC.x, BC.y),
-            gB = c.createLinearGradient(dots[i].pos.x, dots[i].pos.y, CA.x, CA.y),
-            gC = c.createLinearGradient(dots[z].pos.x, dots[z].pos.y, AB.x, AB.y),
+          gA = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, BC.x, BC.y),
+          gB = c.createLinearGradient(dots[i].pos.x, dots[i].pos.y, CA.x, CA.y),
+          gC = c.createLinearGradient(dots[z].pos.x, dots[z].pos.y, AB.x, AB.y),
 
-            alphaA = 1-(center.A/maxRadius),
-            alphaB = 1-(center.B/maxRadius),
-            alphaC = 1-(center.C/maxRadius);
+          alphaA = 1-(center.A/maxRadius),
+          alphaB = 1-(center.B/maxRadius),
+          alphaC = 1-(center.C/maxRadius);
 
-            if (alphaA > .5) alphaA *= (alphaA-.5)+1;
-            if (alphaB > .5) alphaB *= (alphaB-.5)+1;
-            if (alphaC > .5) alphaC *= (alphaC-.5)+1;
+          if (alphaA > .5) alphaA *= (alphaA-.5)+1;
+          if (alphaB > .5) alphaB *= (alphaB-.5)+1;
+          if (alphaC > .5) alphaC *= (alphaC-.5)+1;
 
-            var min = Math.min(alphaA, alphaB, alphaC);
-            // if (alphaA != min) alphaA *= min;
-            // if (alphaC != min) alphaC *= min;
-            // if (alphaB != min) alphaB *= min;
-            alphaA *= min;
-            alphaB *= min;
-            alphaC *= min;
+          var min = Math.min(alphaA, alphaB, alphaC);
+          // if (alphaA != min) alphaA *= min;
+          // if (alphaC != min) alphaC *= min;
+          // if (alphaB != min) alphaB *= min;
+          alphaA *= min;
+          alphaB *= min;
+          alphaC *= min;
 
-            var cA = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + alphaA + ")",
-            cB = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + "," + alphaB + ")",
-            cC = "rgba(" + dots[z].r + "," + dots[z].g + "," + dots[z].b + "," + alphaC + ")",
-            c0 = "rgba(0,0,0,0)";
+          var cA = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + alphaA + ")",
+          cB = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + "," + alphaB + ")",
+          cC = "rgba(" + dots[z].r + "," + dots[z].g + "," + dots[z].b + "," + alphaC + ")",
+          c0 = "rgba(0,0,0,0)";
 
-            gA.addColorStop(0, cA);
-            gA.addColorStop(1, c0);
-            gB.addColorStop(0, cB);
-            gB.addColorStop(1, c0);
-            gC.addColorStop(0, cC);
-            gC.addColorStop(1, c0);
+          gA.addColorStop(0, cA);
+          gA.addColorStop(1, c0);
+          gB.addColorStop(0, cB);
+          gB.addColorStop(1, c0);
+          gC.addColorStop(0, cC);
+          gC.addColorStop(1, c0);
 
-            c.beginPath();
-            c.moveTo(dots[j].pos.x, dots[j].pos.y);
+          c.beginPath();
+          c.moveTo(dots[j].pos.x, dots[j].pos.y);
 
-            if (mode == 't') {
-              c.lineTo(dots[i].pos.x, dots[i].pos.y);
-              c.lineTo(dots[z].pos.x, dots[z].pos.y);
-            }
-
-            else {
-              c.quadraticCurveTo(center.x, center.y, dots[i].pos.x, dots[i].pos.y);
-              c.quadraticCurveTo(center.x, center.y, dots[z].pos.x, dots[z].pos.y);
-              c.quadraticCurveTo(center.x, center.y, dots[j].pos.x, dots[j].pos.y);
-            }
-
-            c.fillStyle = gA; c.fill(); c.fillStyle = gB; c.fill(); c.fillStyle = gC; c.fill();
+          if (mode == 't') {
+            c.lineTo(dots[i].pos.x, dots[i].pos.y);
+            c.lineTo(dots[z].pos.x, dots[z].pos.y);
           }
+
+          else {
+            c.quadraticCurveTo(center.x, center.y, dots[i].pos.x, dots[i].pos.y);
+            c.quadraticCurveTo(center.x, center.y, dots[z].pos.x, dots[z].pos.y);
+            c.quadraticCurveTo(center.x, center.y, dots[j].pos.x, dots[j].pos.y);
+          }
+
+          c.fillStyle = gA; c.fill(); c.fillStyle = gB; c.fill(); c.fillStyle = gC; c.fill();
         }
       }
     }
   }
+}
