@@ -196,20 +196,20 @@ function render(c) {
         grd.addColorStop(0, s1);
         grd.addColorStop(1, s2);
 
-        if (mode == "c" || mode == "cm") {
+        if (mode.charAt(0) == 'c') {
           c.beginPath();
           c.arc((dots[j].pos.x + dots[i].pos.x)/2, (dots[j].pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
           if (mode == 'c') { c.fillStyle = grd; c.fill(); }
           else { c.strokeStyle = grd; c.stroke();}
         }
-        else if (mode == 's') {
+        else if (mode.charAt(0) == 's') {
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);
           c.lineTo(dots[i].pos.x, dots[j].pos.y);
           c.lineTo(dots[i].pos.x, dots[i].pos.y);
           c.lineTo(dots[j].pos.x, dots[i].pos.y);
-          c.fillStyle = grd;
-          c.fill()
+          if (mode == 's') { c.fillStyle = grd; c.fill(); }
+          else { c.lineTo(dots[j].pos.x, dots[j].pos.y); c.strokeStyle = grd; c.stroke();}
         }
         else {
           c.beginPath();
