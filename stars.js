@@ -90,6 +90,7 @@ $(function() {
     $('input[type=checkbox] + label').css('color',bg ? "#333" : "#ccc");
     $('input[type=checkbox]:checked + label').css('color','#f80');
     $('select').css('color',bg ? "black" : 'white');
+    $('option').css('color',bg ? "black" : 'white');
 
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
