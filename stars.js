@@ -210,23 +210,11 @@ function render(c) {
               delta = { x:Math.abs(dots[j].pos.x - dots[i].pos.x)/2, y: Math.abs(dots[j].pos.y - dots[i].pos.y)/2 };
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);
-          c.lineTo(center.x - delta.y, center.y + delta.x);
+          c.lineTo(Math.cos(Math.PI/2) * (dots[j].pos.x-center.x) - Math.sin(Math.PI/2) * (dots[j].pos.y-center.y) + center.x, Math.sin(Math.PI/2) * (dots[j].pos.x-center.x) + Math.cos(Math.PI/2) * (dots[j].pos.y-center.y) + center.y);
           c.lineTo(dots[i].pos.x, dots[i].pos.y);
-          c.lineTo(center.x + delta.y, center.y - delta.x);
+          c.lineTo(Math.cos(-Math.PI/2) * (dots[j].pos.x-center.x) - Math.sin(-Math.PI/2) * (dots[j].pos.y-center.y) + center.x, Math.sin(-Math.PI/2) * (dots[j].pos.x-center.x) + Math.cos(-Math.PI/2) * (dots[j].pos.y-center.y) + center.y);
           if (mode == 'q') { c.fillStyle = grd; c.fill(); }
           else { c.lineTo(dots[j].pos.x, dots[j].pos.y); c.strokeStyle = grd; c.stroke();}
-          // c.closePath();
-          // c.beginPath();
-          // c.arc(center.x - delta.x, center.y - delta.y, 6, 0, 2* Math.PI);
-          // c.arc(center.x + delta.x, center.y + delta.y, 6, 0, 2* Math.PI);
-          // c.fillStyle = "white";
-          // c.fill();
-          // c.closePath();
-          // c.beginPath();
-          // c.arc(dots[j].pos.x, dots[j].pos.y, 6, 0, 2* Math.PI);
-          // c.arc(dots[i].pos.x, dots[i].pos.y, 6, 0, 2* Math.PI);
-          // c.fillStyle = "orange";
-          // c.fill();
         }
         else if (mode.charAt(0) == 's') {
           c.beginPath();
