@@ -13,7 +13,7 @@ input[type=range]::-webkit-slider-thumb {
     width: 12px;
     border-radius: 50%;
     background: #666;
-    margin-top: -3px;
+    margin-top: -4px;
 }
 
 input[type=range]:focus {
@@ -57,3 +57,6 @@ input[type=range]:-moz-focusring{
 input[type=range]:focus::-moz-range-track {
     background: #ccc;
 }
+
+#thick::-webkit-slider-runnable-track {  background: #b00; }
+#thick:focus::-webkit-slider-runnable-track {  background: #f00; }

@@ -1,20 +1,22 @@
 /*		#TO-DO#
 • Gravity
-• Squares using lines as diagnol
 • Text feedback for sliders – hovering JS text?
 • Click to add dot (increase max value)
 • Voronoi visual
 • Rainbow or Monochrome option for dots
 • Configuration export and import?
-• Dropdown-menu text with background
+• Visually distinct and responsive sliders
 
 ⚠ Fix on iOS
 */
 
+//Graphics and structural globals
 mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
 canvas = document.createElement('canvas'),
 context = canvas.getContext('2d'),
 dots = [],
+
+//slider-related globals
 stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50,
 maxDiv = -11.5,
 maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv,
@@ -28,6 +30,7 @@ tether = false,
 bg = false,
 mode="l",
 
+//fps diagnosing globals
 frames = 0,
 fps = 0,
 date = new Date();
@@ -110,7 +113,6 @@ $(function() {
 
 //Loop function
 ! function loop() {
-
   frames++;
   if (new Date()-date >= 1000) {
     date = new Date();
@@ -206,13 +208,12 @@ function render(c) {
           else { c.strokeStyle = grd; c.stroke();}
         }
         else if (mode.charAt(0) == 'q') {
-          var center = { x: (dots[j].pos.x + dots[i].pos.x)/2, y: (dots[j].pos.y + dots[i].pos.y)/2 },
-              delta = { x:Math.abs(dots[j].pos.x - dots[i].pos.x)/2, y: Math.abs(dots[j].pos.y - dots[i].pos.y)/2 };
+          var center = { x: (dots[j].pos.x + dots[i].pos.x)/2, y: (dots[j].pos.y + dots[i].pos.y)/2 };
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);
-          c.lineTo(Math.cos(Math.PI/2) * (dots[j].pos.x-center.x) - Math.sin(Math.PI/2) * (dots[j].pos.y-center.y) + center.x, Math.sin(Math.PI/2) * (dots[j].pos.x-center.x) + Math.cos(Math.PI/2) * (dots[j].pos.y-center.y) + center.y);
+          c.lineTo(-(dots[j].pos.y-center.y) + center.x, (dots[j].pos.x-center.x) + center.y);
           c.lineTo(dots[i].pos.x, dots[i].pos.y);
-          c.lineTo(Math.cos(-Math.PI/2) * (dots[j].pos.x-center.x) - Math.sin(-Math.PI/2) * (dots[j].pos.y-center.y) + center.x, Math.sin(-Math.PI/2) * (dots[j].pos.x-center.x) + Math.cos(-Math.PI/2) * (dots[j].pos.y-center.y) + center.y);
+          c.lineTo((dots[j].pos.y-center.y) + center.x, -(dots[j].pos.x-center.x) + center.y);
           if (mode == 'q') { c.fillStyle = grd; c.fill(); }
           else { c.lineTo(dots[j].pos.x, dots[j].pos.y); c.strokeStyle = grd; c.stroke();}
         }
