@@ -74,9 +74,11 @@ input[type=checkbox] {
 #bottom {
   display: flex;
   position: absolute;
-  margin: auto;
-  width: 50%;
+  margin: 4;
   bottom: 0;
+  left:0;
+  right:0;
+  justify-content:center;
 }
 
 #screenshot {
