@@ -35,6 +35,7 @@ G = 200,
 gravity = false,
 tether = false,
 bg = false,
+opaque = true,
 mode="l",
 
 //fps diagnosing globals
@@ -94,19 +95,41 @@ $(function() {
       if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
       else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
     }
-
-    $('body').css("background",bg ? "white" : "black");
-    $('a:link').css("color",bg ? "black" : "white");
-    $('input[type=checkbox] + label').css('color',bg ? "#333" : "#ccc");
-    $('input[type=checkbox]:checked + label').css('color','#f80');
+    $('body').css("background", bg ? "white" : "black");
+    $('a:link').css("color", bg ? "black" : "white");
+    $("#opaque + label").css("color", bg ? "black" : "white");
+    //$('input[type=checkbox]:not(:checked) + label').css('color',bg ? "#333" : "#ccc");
+    //$('input[type=checkbox]:checked + label').css('color','#f80');
     // $('select').css('color',bg ? "black" : 'white');
     // $('option').css('color',bg ? "black" : 'white');
-
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
 
   $('a').hover(function(e) { $('#'+e.target.id).css('color','#f80'); }, function(e) { $('#'+e.target.id).css("color",bg ? "black" : "white"); });
-  $('#screenshot').click(function(e) { window.open(canvas.toDataURL()); });
+
+  $('#screenshot').click(function(e) {
+    if (!opaque) window.open(canvas.toDataURL());
+    else {
+
+      var canvas2=document.createElement("canvas");
+      canvas2.width=canvas.width;
+      canvas2.height=canvas.height;
+
+      var ctx2=canvas2.getContext("2d")
+      ctx2.putImageData(context.getImageData(0,0,canvas.width,canvas.height), 0, 0);
+
+
+      //var saveCanv = context.getImageData(0,0,canvas.width,canvas.height);
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = bg ? "white" : "black";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      //context.putImageData(saveCanv, 0, 0);
+      context.drawImage(canvas2,0,0);
+      window.open(canvas.toDataURL());
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(canvas2,0,0);
+    }
+  });
 
   $('select').change(function(e) {
     mode = e.target.value;
