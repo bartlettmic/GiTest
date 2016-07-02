@@ -62,13 +62,29 @@ input[type=checkbox] {
   background: 100%;
 }
 
-a {
+#about {
   position: absolute;
   right: 0;
   bottom: 0;
   font-family:monospace;
   color:white;
   text-decoration:none
+}
+
+#bottom {
+  display: flex;
+  position: absolute;
+  margin: auto;
+  width: 50%;
+  bottom: 0;
+}
+
+
+#screenshot {
+  font-family:monospace;
+  color:white;
+  text-decoration:none
+
 }
 
 /*select {

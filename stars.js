@@ -1,11 +1,18 @@
 /*		#TO-DO#
 • Gravity
-• Text feedback for sliders – hovering JS text?
+• Orbit? We have the math!
+    ▶ p'x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
+    ▶ p'y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
+• Text feedback for sliders → hovering JS text?
 • Click to add dot (increase max value)
-• Voronoi visual
-• Rainbow or Monochrome option for dots
+• Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
 • Visually distinct and responsive sliders
+    ▼ Bottom configuration section
+• Trailing/Clearing option
+• Rainbow or Monochrome option for dots
+
+save: function() { previousShit = canvas.toDataURL(); }, load: function(){ canvas.clearorwhatever; canvas.drawImage(previousShit) }
 
 ⚠ Fix on iOS
 */
@@ -98,15 +105,25 @@ $(function() {
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
 
-  $('a').hover(function() { $('a').css('color','#f80'); }, function() { $('a').css("color",bg ? "black" : "white"); });
+  $('a').hover(function(e) { $('#'+e.target.id).css('color','#f80'); }, function(e) { $('#'+e.target.id).css("color",bg ? "black" : "white"); });
+  $('#screenshot').click(function(e) { window.open(canvas.toDataURL()); });
 
   $('select').change(function(e) {
     mode = e.target.value;
-    console.log(mode);
     context.lineWidth = thick;
-    if (mode == "r") context.lineCap = "round";
-    else context.lineCap = "square";
-    mode == "t" || mode == "a" ? (context.globalCompositeOperation = 'lighten', document.getElementById("thick").disabled = true) : (context.globalCompositeOperation = 'source-over', document.getElementById("thick").disabled = false);
+    mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
+    if (mode == "t" || mode == "a" || mode == 'c') {
+      //context.globalCompositeOperation = 'lighten';
+      document.getElementById("thick").disabled = true;
+      $('#thick').css('background', '#777');
+      $('#thick:focus::-webkit-slider-runnable-track').css('background-color', '#000');
+    }
+    else {
+      //context.globalCompositeOperation = 'source-over';
+      document.getElementById("thick").disabled = false;
+      $('#thick::-webkit-slider-runnable-track').css('background', '#0bb');
+      $('#thick:focus::-webkit-slider-runnable-track').css('background', '#0ff');
+    }
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
 })
@@ -171,8 +188,8 @@ Dot.prototype.update = function() {
       }
       X /= (this.ids.size + 1);
       Y /= (this.ids.size + 1);
-      this.pos.x += (4 * X + this.vel.x) / 5;
-      this.pos.y += (4 * Y + this.vel.y) / 5;
+      this.pos.x += (3*X + this.vel.x) / 4;
+      this.pos.y += (3*Y + this.vel.y) / 4;
     } else {
       this.pos.x += this.vel.x;
       this.pos.y += this.vel.y;
