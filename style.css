@@ -79,12 +79,10 @@ input[type=checkbox] {
   bottom: 0;
 }
 
-
 #screenshot {
   font-family:monospace;
   color:white;
   text-decoration:none
-
 }
 
 /*select {

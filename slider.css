@@ -58,13 +58,6 @@ input[type=range]:focus::-moz-range-track {
     background: #ccc;
 }
 
-/*<input id="stars"
-<input id="maxDiv"
-<input id="speed"
-<input id="thick"
-<input id="lines"
-<input id="G" */
-
 #stars::-webkit-slider-runnable-track {  background: #b33; }
 #stars:focus::-webkit-slider-runnable-track {  background: #f66; }
 
@@ -76,6 +69,8 @@ input[type=range]:focus::-moz-range-track {
 
 #thick::-webkit-slider-runnable-track {  background: #0b7; }
 #thick:focus::-webkit-slider-runnable-track {  background: #0f9; }
+#thick:disabled::-webkit-slider-runnable-track {  background: #777; }
+#thick:disabled::-webkit-slider-thumb { background: #333; }
 
 #lines::-webkit-slider-runnable-track {  background: #05b; }
 #lines:focus::-webkit-slider-runnable-track {  background: #09f; }

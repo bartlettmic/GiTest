@@ -112,17 +112,13 @@ $(function() {
     mode = e.target.value;
     context.lineWidth = thick;
     mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
-    if (mode == "t" || mode == "a" || mode == 'c') {
+    if ("tacqs".indexOf(mode) > -1 ) {
       //context.globalCompositeOperation = 'lighten';
       document.getElementById("thick").disabled = true;
-      $('#thick').css('background', '#777');
-      $('#thick:focus::-webkit-slider-runnable-track').css('background-color', '#000');
     }
     else {
       //context.globalCompositeOperation = 'source-over';
       document.getElementById("thick").disabled = false;
-      $('#thick::-webkit-slider-runnable-track').css('background', '#0bb');
-      $('#thick:focus::-webkit-slider-runnable-track').css('background', '#0ff');
     }
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
