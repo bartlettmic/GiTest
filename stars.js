@@ -158,10 +158,7 @@ $(function() {
 
 //Dot class constructor
 function Dot(ID) {
-  this.pos = {
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight
-  };
+  this.pos = { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight };
   this.vel = { x: Math.random() * speed * (Math.round(Math.random()) ? 1 : -1), y: 0 };
   //this.vel.y = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1);
   this.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(this.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
@@ -176,7 +173,7 @@ function Dot(ID) {
   //Update Dot's position
 Dot.prototype.update = function() {
     if (tether && this.ids.size > 0) {
-      X = this.vel.x, Y = this.vel.y;
+      var X = this.vel.x, Y = this.vel.y;
       for (let d of this.ids) {
         if (!dots[d]) break;
         X += dots[d].vel.x;
@@ -184,8 +181,10 @@ Dot.prototype.update = function() {
       }
       X /= (this.ids.size + 1);
       Y /= (this.ids.size + 1);
-      this.pos.x += (3*X + this.vel.x) / 4;
-      this.pos.y += (3*Y + this.vel.y) / 4;
+      // this.pos.x += (3*X + this.vel.x) / 4;
+      // this.pos.y += (3*Y + this.vel.y) / 4;
+      this.pos.x += X;
+      this.pos.y += Y;
     } else {
       this.pos.x += this.vel.x;
       this.pos.y += this.vel.y;
