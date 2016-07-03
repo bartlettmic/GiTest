@@ -8,14 +8,13 @@
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
     ▼ Bottom configuration section
-• Trailing/Clearing option
 • Rainbow or Monochrome option for dots
 
 ⚠ Fix on iOS
 */
 
 //Graphics and structural globals
-mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+var mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
 canvas = document.createElement('canvas'),
 context = canvas.getContext('2d'),
 dots = [],
@@ -31,18 +30,10 @@ lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(na
 G = 200,
 
 //checkbox bool globals
-gravity = false,
-tether = false,
-bg = false,
-opaque = true,
-trail=false,
-rainbow=true,
-mode="l",
+gravity = false, tether = false, bg = false, opaque = true, trail=false, rainbow=true, mode="l",
 
 //fps diagnostic globals
-frames = 0,
-fps = 0,
-date = new Date();
+frames = 0, fps = 0, date = new Date();
 
 
 //Initialize
@@ -60,9 +51,8 @@ $(document).ready(function() {
   context.lineWidth = thick;
 });
 
-
 //update mouse position
-$(document).mousemove(function(e) { mousePos = { x: e.clientX, y: e.clientY	}; });
+$(document).mousemove(function(e) { mouse = { x: e.clientX, y: e.clientY	}; });
 
 //Slider and checkbox updates
 $(function() {
@@ -95,6 +85,12 @@ $(function() {
     if (e.target.id == 'tether') {
       if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
       else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
+    }
+    if (e.target.id == 'gravity' && !gravity) {
+      for (let d of dots) {
+        d.vel.x = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1);
+        d.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(d.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
+      }
     }
     $('body').css("background", bg ? "white" : "black");
     $('a:link').css("color", bg ? "black" : "white");
@@ -167,6 +163,14 @@ $(function() {
   }
 
   if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
+  else {
+    context.save();
+    context.globalAlpha = 0.025;
+    context.globalCompositeOperation='destination-out';
+    context.fillStyle= '#FFF';
+    context.fillRect(0,0,canvas.width, canvas.height);
+    context.restore();
+  }
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
   for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
@@ -195,21 +199,22 @@ function Dot(ID) {
 
   //Update Dot's position
 Dot.prototype.update = function() {
-    if (tether && this.ids.size > 0) {
-      var X = this.vel.x, Y = this.vel.y;
-      for (let d of this.ids) {
-        if (!dots[d]) break;
-        X += dots[d].vel.x;
-        Y += dots[d].vel.y;
+    if (gravity) {
+      var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
+      if (distance > maxDist) {
+        this.vel.x -= (6.67408*Math.pow(10,-3))*G/Math.pow(distance,2)*(this.pos.x - mouse.x);
+        this.vel.y -= (6.67408*Math.pow(10,-3))*G/Math.pow(distance,2)*(this.pos.y - mouse.y);
       }
-      X /= (this.ids.size + 1);
-      Y /= (this.ids.size + 1);
-      this.pos.x += (3*X + this.vel.x) / 4;
-      this.pos.y += (3*Y + this.vel.y) / 4;
-    } else {
-      this.pos.x += this.vel.x;
-      this.pos.y += this.vel.y;
     }
+    var X = this.vel.x, Y = this.vel.y;
+    if (tether && this.ids.size > 0) {
+      for (let d of this.ids) { if (!dots[d]) break; X += dots[d].vel.x; Y += dots[d].vel.y; }
+      X /= (this.ids.size + 1); Y /= (this.ids.size + 1);
+      X = (3*X + this.vel.x) / 4;
+      Y = (3*Y + this.vel.y) / 4;
+    }
+
+    this.pos.x += X; this.pos.y += Y;
     if (this.pos.x <= 0) this.vel.x = Math.abs(this.vel.x);
     if (this.pos.x >= window.innerWidth) { this.vel.x *= (this.vel.x < 0 ? 1 : -1); this.pos.x = window.innerWidth; }
     if (this.pos.y <= 0) this.vel.y = Math.abs(this.vel.y);
@@ -218,7 +223,11 @@ Dot.prototype.update = function() {
 
 function render(c) {
   for (var j = 0; j < dots.length; j++) {
+    c.beginPath();
+    c.arc(dots[j].pos.x, dots[j].pos.y, 1, 0, 2 * Math.PI);
+    c.fillStyle = "white"; c.fill(); c.closePath();
     if (lines > 0 && dots[j].ids.size >= lines) continue;
+    //if (gravity && Math.sqrt(Math.pow(mouse.x - dots[j].pos.x, 2) + Math.pow(mouse.y - dots[j].pos.y, 2)) <= maxDist*1.5) continue;
     for (var i = j+1; i < dots.length; i++) {
       if (dots[j].id==i || dots[i].ids.has(dots[j].id)) continue;
       var distance = Math.sqrt(Math.pow(dots[j].pos.x - dots[i].pos.x, 2) + Math.pow(dots[j].pos.y - dots[i].pos.y, 2));
