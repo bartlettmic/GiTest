@@ -99,10 +99,16 @@ $(function() {
     $('body').css("background", bg ? "white" : "black");
     $('a:link').css("color", bg ? "black" : "white");
     $("#opaque + label").css("color", bg ? "black" : "white");
-    //$('input[type=checkbox]:not(:checked) + label').css('color',bg ? "#333" : "#ccc");
-    //$('input[type=checkbox]:checked + label').css('color','#f80');
-    // $('select').css('color',bg ? "black" : 'white');
-    // $('option').css('color',bg ? "black" : 'white');
+    if (trail) {
+      $('#bottom').css('background', bg ? "white" : "black");
+      $('aside').css('background', bg ? "white" : "black");
+      $('a').css('background', bg ? "white" : "black");
+    }
+    else{
+      $('#bottom').css('background', 'transparent');
+      $('aside').css('background', 'transparent');
+      $('a').css('background', 'transparent');
+     }
     console.log(e.target.id + " -> " + window[e.target.id]);
   });
 
