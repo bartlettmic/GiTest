@@ -7,12 +7,9 @@
 • Click to add dot (increase max value)
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
-• Visually distinct and responsive sliders
     ▼ Bottom configuration section
 • Trailing/Clearing option
 • Rainbow or Monochrome option for dots
-
-save: function() { previousShit = canvas.toDataURL(); }, load: function(){ canvas.clearorwhatever; canvas.drawImage(previousShit) }
 
 ⚠ Fix on iOS
 */
@@ -32,13 +29,17 @@ speed = 0.25,
 thick = 3.5,
 lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
 G = 200,
+
+//checkbox bool globals
 gravity = false,
 tether = false,
 bg = false,
 opaque = true,
+trail=false,
+rainbow=true,
 mode="l",
 
-//fps diagnosing globals
+//fps diagnostic globals
 frames = 0,
 fps = 0,
 date = new Date();
@@ -110,16 +111,9 @@ $(function() {
   $('#screenshot').click(function(e) {
     if (!opaque) window.open(canvas.toDataURL());
     else {
-
-      var canvas2=document.createElement("canvas");
-      canvas2.width=canvas.width;
-      canvas2.height=canvas.height;
-
+      var canvas2=document.createElement("canvas"); canvas2.width=canvas.width; canvas2.height=canvas.height;
       var ctx2=canvas2.getContext("2d")
       ctx2.putImageData(context.getImageData(0,0,canvas.width,canvas.height), 0, 0);
-
-
-      //var saveCanv = context.getImageData(0,0,canvas.width,canvas.height);
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.fillStyle = bg ? "white" : "black";
       context.fillRect(0, 0, canvas.width, canvas.height);
@@ -166,7 +160,7 @@ $(function() {
     maxRadius = maxDist * Math.sqrt(3) / 3;
   }
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
   for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
@@ -204,10 +198,8 @@ Dot.prototype.update = function() {
       }
       X /= (this.ids.size + 1);
       Y /= (this.ids.size + 1);
-      // this.pos.x += (3*X + this.vel.x) / 4;
-      // this.pos.y += (3*Y + this.vel.y) / 4;
-      this.pos.x += X;
-      this.pos.y += Y;
+      this.pos.x += (3*X + this.vel.x) / 4;
+      this.pos.y += (3*Y + this.vel.y) / 4;
     } else {
       this.pos.x += this.vel.x;
       this.pos.y += this.vel.y;
