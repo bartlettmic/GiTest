@@ -9,6 +9,7 @@
 • Configuration export and import?
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
+• Tri-state fading
 
 ⚠ Fix on iOS
 */
@@ -164,12 +165,18 @@ $(function() {
 
   if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
   else {
-    context.save();
-    context.globalAlpha = 0.025;
-    context.globalCompositeOperation='destination-out';
-    context.fillStyle= '#FFF';
-    context.fillRect(0,0,canvas.width, canvas.height);
-    context.restore();
+    // context.save();
+    // context.globalAlpha = 0.025;
+    // context.globalCompositeOperation='destination-out';
+    // context.fillStyle= '#FFF';
+    // context.fillRect(0,0,canvas.width, canvas.height);
+    // context.restore();
+    var lastImage = context.getImageData(0,0,canvas.width,canvas.height);
+    var pixelData = lastImage.data;
+    var i;
+    var len=pixelData.length;
+    for (i=3; i<len; i += 4) pixelData[i] -= 0.6;
+    context.putImageData(lastImage,0,0);
   }
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
