@@ -1,5 +1,4 @@
 /*		#TO-DO#
-• Gravity
 • Orbit? We have the math!
     ▶ p'x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
     ▶ p'y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
@@ -31,7 +30,7 @@ lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(na
 G = 200,
 
 //checkbox bool globals
-gravity = false, tether = false, bg = false, opaque = true, trail=false, rainbow=true, mode="l",
+gravity = false, tether = false, bg = false, opaque = true, points=false, trail=-1, rainbow=true, mode="l",
 
 //fps diagnostic globals
 frames = 0, fps = 0, date = new Date();
@@ -82,7 +81,18 @@ $(function() {
   });
 
   $('input[type="checkbox"]').change(function(e) {
-    window[e.target.value] = e.target.checked;
+    if (e.target.id == 'trail') {
+      if (e.target.readOnly) {
+        e.target.checked=e.target.readOnly=false;
+      }
+      else if (!e.target.checked) {
+        e.target.readOnly=e.target.indeterminate=true;
+      }
+      if (e.target.indeterminate) trail = -1; //trails
+      else if (e.target.checked) trail = 0; //clear
+      else trail = 1; //canvas
+    }
+    else window[e.target.value] = e.target.checked;
     if (e.target.id == 'tether') {
       if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
       else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
@@ -96,17 +106,18 @@ $(function() {
     $('body').css("background", bg ? "white" : "black");
     $('a:link').css("color", bg ? "black" : "white");
     $("#opaque + label").css("color", bg ? "black" : "white");
+    $("#trail + label").css("color", bg ? "black" : "white");
     if (trail) {
       $('#bottom').css('background', bg ? "white" : "black");
       $('aside').css('background', bg ? "white" : "black");
       $('a').css('background', bg ? "white" : "black");
     }
-    else{
+    else {
       $('#bottom').css('background', 'transparent');
       $('aside').css('background', 'transparent');
       $('a').css('background', 'transparent');
      }
-    console.log(e.target.id + " -> " + window[e.target.id]);
+    //console.log(e.target.id + " -> " + window[e.target.id]);
   });
 
   $('a').hover(function(e) { $('#'+e.target.id).css('color','#f80'); }, function(e) { $('#'+e.target.id).css("color",bg ? "black" : "white"); });
@@ -163,21 +174,22 @@ $(function() {
     maxRadius = maxDist * Math.sqrt(3) / 3;
   }
 
-  if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
-  else {
-    // context.save();
-    // context.globalAlpha = 0.025;
-    // context.globalCompositeOperation='destination-out';
-    // context.fillStyle= '#FFF';
-    // context.fillRect(0,0,canvas.width, canvas.height);
-    // context.restore();
-    var lastImage = context.getImageData(0,0,canvas.width,canvas.height);
-    var pixelData = lastImage.data;
-    var i;
-    var len=pixelData.length;
-    for (i=3; i<len; i += 4) pixelData[i] -= 0.6;
-    context.putImageData(lastImage,0,0);
-  }
+  //if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  // else {
+  //   // context.save();
+  //   // context.globalAlpha = 0.025;
+  //   // context.globalCompositeOperation='destination-out';
+  //   // context.fillStyle= '#FFF';
+  //   // context.fillRect(0,0,canvas.width, canvas.height);
+  //   // context.restore();
+  //
+  //   var lastImage = context.getImageData(0,0,canvas.width,canvas.height);
+  //   for (var i=3; i < lastImage.data.length; i += 4) lastImage.data[i] -= 1;
+  //   context.putImageData(lastImage,0,0);
+  //   lastImage = null;
+  //   delete lastImage;
+  // }
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
   for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
@@ -208,10 +220,10 @@ function Dot(ID) {
 Dot.prototype.update = function() {
     if (gravity) {
       var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
-      if (distance > maxDist) {
+      //if (distance > maxDist) {
         this.vel.x -= (6.67408*Math.pow(10,-3))*G/Math.pow(distance,2)*(this.pos.x - mouse.x);
         this.vel.y -= (6.67408*Math.pow(10,-3))*G/Math.pow(distance,2)*(this.pos.y - mouse.y);
-      }
+      //}
     }
     var X = this.vel.x, Y = this.vel.y;
     if (tether && this.ids.size > 0) {
@@ -230,9 +242,13 @@ Dot.prototype.update = function() {
 
 function render(c) {
   for (var j = 0; j < dots.length; j++) {
-    c.beginPath();
-    c.arc(dots[j].pos.x, dots[j].pos.y, 1, 0, 2 * Math.PI);
-    c.fillStyle = "white"; c.fill(); c.closePath();
+    if (points) {
+      c.beginPath();
+      c.arc(dots[j].pos.x, dots[j].pos.y, 1, 0, 2 * Math.PI);
+      c.fillStyle = bg ? "black" : "white";
+      c.fill();
+      c.closePath();
+    }
     if (lines > 0 && dots[j].ids.size >= lines) continue;
     //if (gravity && Math.sqrt(Math.pow(mouse.x - dots[j].pos.x, 2) + Math.pow(mouse.y - dots[j].pos.y, 2)) <= maxDist*1.5) continue;
     for (var i = j+1; i < dots.length; i++) {
