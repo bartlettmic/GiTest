@@ -6,6 +6,7 @@
 • Click to add dot (increase max value)
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
+• Disable gravity slider when off
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
 
@@ -27,14 +28,13 @@ maxRadius = maxDist * Math.sqrt(3) / 3,
 speed = 0.25,
 thick = 3.5,
 lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
-G = 200,
+G = 100,
 
 //checkbox bool globals
 teleport = false, gravity = false, tether = false, bg = false, opaque = true, points=false, trail=0, rainbow=true, mode="l",
 
 //fps diagnostic globals
 frames = 0, fps = 0, date = new Date();
-
 
 //Initialize
 $(document).ready(function() {
@@ -121,6 +121,7 @@ $(function() {
       $('#aboutdiv').css('background', 'transparent');
       $('#screen').css('background', 'transparent');
     }
+    console.log(e.target.id+" > "+window[e.target.value]);
   });
 
   $('a').hover(function(e) { $('#'+e.target.id).css('color','#f80'); }, function(e) { $('#'+e.target.id).css("color",bg ? "black" : "white"); });
@@ -179,18 +180,19 @@ $(function() {
 
   if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
   else if (trail < 0) {
-    // context.save();
-    // context.globalAlpha = 0.025;
-    // context.globalCompositeOperation='destination-out';
-    // context.fillStyle= '#FFF';
-    // context.fillRect(0,0,canvas.width, canvas.height);
-    // context.restore();
-
-    var lastImage = context.getImageData(0,0,canvas.width,canvas.height);
-    for (var i=3; i < lastImage.data.length; i += 4) lastImage.data[i] -= 1;
-    context.putImageData(lastImage,0,0);
-    lastImage = null;
-    delete lastImage;
+    context.save();
+    context.globalAlpha = 0.025;
+    context.globalCompositeOperation='destination-out';
+    context.fillStyle= '#FFF';
+    context.fillRect(0,0,canvas.width, canvas.height);
+    context.restore();
+    if (frames%8==0) {
+      var lastImage = context.getImageData(0,0,canvas.width,canvas.height);
+      for (var i=3; i < lastImage.data.length; i += 4) if (lastImage.data[i] < 30) lastImage.data[i]=0;
+      context.putImageData(lastImage,0,0);
+      lastImage = null;
+      delete lastImage;
+    }
   }
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
@@ -218,26 +220,34 @@ function Dot(ID) {
   if ((this.r+this.g+this.b)/3 < 50) this.r=255, this.g=64, this.b = 0;
 }
 
-  //Update Dot's position
+//Dot update
 Dot.prototype.update = function() {
-    if (gravity) {
-      //var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
-      this.vel.x -= 0.00667408*G/Math.pow(distance,2)*(this.pos.x - mouse.x);
-      this.vel.y -= 0.00667408*G/Math.pow(distance,2)*(this.pos.y - mouse.y);
-    }
-    var X = this.vel.x, Y = this.vel.y;
-    if (tether && this.ids.size > 0) {
-      for (let d of this.ids) { if (!dots[d]) break; X += dots[d].vel.x; Y += dots[d].vel.y; }
-      X /= (this.ids.size + 1); Y /= (this.ids.size + 1);
-      X = (3*X + this.vel.x) / 4;
-      Y = (3*Y + this.vel.y) / 4;
-    }
+  if (gravity) {
+    var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
+    this.vel.x -= 0.00667408*G/Math.pow(distance,2)*(this.pos.x - mouse.x);
+    this.vel.y -= 0.00667408*G/Math.pow(distance,2)*(this.pos.y - mouse.y);
+  }
+  var X = this.vel.x, Y = this.vel.y;
+  if (tether && this.ids.size > 0) {
+    for (let d of this.ids) { if (!dots[d]) break; X += dots[d].vel.x; Y += dots[d].vel.y; }
+    X /= (this.ids.size + 1); Y /= (this.ids.size + 1);
+    X = (3*X + this.vel.x) / 4;
+    Y = (3*Y + this.vel.y) / 4;
+  }
 
-    this.pos.x += X; this.pos.y += Y;
+  this.pos.x += X; this.pos.y += Y;
+  if (teleport) {
+    if (this.pos.x >= window.innerWidth) this.pos.x = 1;
+    else if (this.pos.x <= 0) this.pos.x = window.innerWidth;
+    if (this.pos.y >= window.innerHeight) this.pos.y = 1;
+    else if (this.pos.y <= 1) this.pos.y = window.innerHeight;
+  }
+  else {
     if (this.pos.x <= 0) this.vel.x = Math.abs(this.vel.x);
     if (this.pos.x >= window.innerWidth) { this.vel.x *= (this.vel.x < 0 ? 1 : -1); this.pos.x = window.innerWidth; }
     if (this.pos.y <= 0) this.vel.y = Math.abs(this.vel.y);
     if (this.pos.y >= window.innerHeight) { this.vel.y *= (this.vel.y < 0 ? 1 : -1); this.pos.y = window.innerHeight; }
+  }
 };
 
 function render(c) {

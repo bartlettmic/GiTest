@@ -1,13 +1,9 @@
-/* Body has a margin, it's annoying. Fuck it. */
 body {
   margin: 0;
   background: black;
-  /*background-image: url("memes.jpg");*/
-  /*background-size:100%;*/
   overflow:hidden
 }
 
-/* Actual main height, take up the full height. */
 main {  height: 100vh; width: 100vw; }
 
 aside { display: flex; position: absolute; left: 0; right: 0; }
@@ -20,6 +16,10 @@ input[type=checkbox] { display: none; }
 
 #rainbow + label { margin-right: 0.5em;}
 
+#teleport + label { color: white; }
+#teleport + label::before { content:"reflect" }
+#teleport:checked + label::before { content:"loop" }
+
 #bg + label::before {  color: white; content:"black"; }
 #bg:checked + label::before {  color: black; content:"white"; }
 
@@ -28,10 +28,7 @@ input[type=checkbox] { display: none; }
 #trail:checked + label::before { content:"clear" }
 #trail:indeterminate + label::before { content:"trails" }
 
-#opaque + label {
-  /*margin-right:0.5em; */
-  margin-left:0.25em;
-  color: white; }
+#opaque + label { margin-left:0.25em; color: white; }
 #opaque + label::before { content:"transparent"; }
 #opaque:checked + label::before { content:"opaque"; }
 
@@ -45,8 +42,8 @@ input[type=checkbox] { display: none; }
   font-family:monospace;
   color:white;
   text-decoration: none;
-  margin-left: 0.5em;
-  margin-right: 0.5em;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
 }
 
 #aboutdiv {
