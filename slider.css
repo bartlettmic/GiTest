@@ -77,3 +77,5 @@ input[type=range]:focus::-moz-range-track {
 
 #G::-webkit-slider-runnable-track {  background: #50b; }
 #G:focus::-webkit-slider-runnable-track {  background: #90f; }
+#G:disabled::-webkit-slider-runnable-track {  background: #777; }
+#G:disabled::-webkit-slider-thumb { background: #333; }

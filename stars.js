@@ -6,9 +6,10 @@
 • Click to add dot (increase max value)
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
-• Disable gravity slider when off
+
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
+• Disable gravity slider when off
 
 ⚠ Fix on iOS
 ⚠ Lock FPS
@@ -43,6 +44,7 @@ $(document).ready(function() {
   canvas.height = window.innerHeight;
   $('input[type="range"]').each(function(i) {
     this.value = window[this.id];
+    if (this.id == "G") document.getElementById("G").disabled = !gravity;
   });
   $('input[type="checkbox"]').each(function(i) {
     this.checked = window[this.id] ? window[this.id].toString() : "";
@@ -105,22 +107,11 @@ $(function() {
         d.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(d.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
       }
     }
+    document.getElementById("G").disabled = !gravity;
     $('body').css("background", bg ? "white" : "black");
-    $('a:link').css("color", bg ? "black" : "white");
-    $("#opaque + label").css("color", bg ? "black" : "white");
-    $("#trail + label").css("color", bg ? "black" : "white");
-    if (trail) {
-      $('#bottom').css('background', bg ? "white" : "black");
-      $('aside').css('background', bg ? "white" : "black");
-      $('#aboutdiv').css('background', bg ? "white" : "black");
-      $('#screen').css('background', bg ? "white" : "black");
-    }
-    else {
-      $('#bottom').css('background', 'transparent');
-      $('aside').css('background', 'transparent');
-      $('#aboutdiv').css('background', 'transparent');
-      $('#screen').css('background', 'transparent');
-    }
+    $('a, #opaque + label, #trail + label, #teleport + label').css("color", bg ? "black" : "white");
+    if (trail) $('#bottom, aside, #aboutdiv, #screen').css('background', bg ? "white" : "black");
+    else $('#bottom, aside, #aboutdiv, #screen').css('background', 'transparent');
     console.log(e.target.id+" > "+window[e.target.value]);
   });
 
@@ -135,7 +126,6 @@ $(function() {
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.fillStyle = bg ? "white" : "black";
       context.fillRect(0, 0, canvas.width, canvas.height);
-      //context.putImageData(saveCanv, 0, 0);
       context.drawImage(canvas2,0,0);
       window.open(canvas.toDataURL());
       context.clearRect(0, 0, canvas.width, canvas.height);
