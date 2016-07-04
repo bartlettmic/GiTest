@@ -10,10 +10,11 @@
 • Rainbow or Monochrome option for dots
 
 ⚠ Fix on iOS
+⚠ Lock FPS
 */
 
 //Graphics and structural globals
-var mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
 canvas = document.createElement('canvas'),
 context = canvas.getContext('2d'),
 dots = [],
@@ -29,7 +30,7 @@ lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(na
 G = 200,
 
 //checkbox bool globals
-gravity = false, tether = false, bg = false, opaque = true, points=false, trail=0, rainbow=true, mode="l",
+teleport = false, gravity = false, tether = false, bg = false, opaque = true, points=false, trail=0, rainbow=true, mode="l",
 
 //fps diagnostic globals
 frames = 0, fps = 0, date = new Date();
@@ -111,13 +112,13 @@ $(function() {
     if (trail) {
       $('#bottom').css('background', bg ? "white" : "black");
       $('aside').css('background', bg ? "white" : "black");
-      $('#about').css('background', bg ? "white" : "black");
+      $('#aboutdiv').css('background', bg ? "white" : "black");
       $('#screen').css('background', bg ? "white" : "black");
     }
     else {
       $('#bottom').css('background', 'transparent');
       $('aside').css('background', 'transparent');
-      $('#about').css('background', 'transparent');
+      $('#aboutdiv').css('background', 'transparent');
       $('#screen').css('background', 'transparent');
     }
   });
@@ -220,11 +221,9 @@ function Dot(ID) {
   //Update Dot's position
 Dot.prototype.update = function() {
     if (gravity) {
-      var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
-      //if (distance > maxDist) {
-        this.vel.x -= (6.67408*Math.pow(10,-3))*G/Math.pow(distance,2)*(this.pos.x - mouse.x);
-        this.vel.y -= (6.67408*Math.pow(10,-3))*G/Math.pow(distance,2)*(this.pos.y - mouse.y);
-      //}
+      //var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
+      this.vel.x -= 0.00667408*G/Math.pow(distance,2)*(this.pos.x - mouse.x);
+      this.vel.y -= 0.00667408*G/Math.pow(distance,2)*(this.pos.y - mouse.y);
     }
     var X = this.vel.x, Y = this.vel.y;
     if (tether && this.ids.size > 0) {

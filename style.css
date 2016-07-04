@@ -28,26 +28,41 @@ input[type=checkbox] { display: none; }
 #trail:checked + label::before { content:"clear" }
 #trail:indeterminate + label::before { content:"trails" }
 
-#opaque + label { margin-right:0.5em; color: white; }
+#opaque + label {
+  /*margin-right:0.5em; */
+  margin-left:0.25em;
+  color: white; }
 #opaque + label::before { content:"transparent"; }
 #opaque:checked + label::before { content:"opaque"; }
 
 #canvas { width: 100%; height: 100%; background: 100%; }
 
-#bottom { position: relative;  left: -50%; }
+#bottom { position: relative;  left: -50%; height: 21px;}
 
-#screenshot {  font-family:monospace; color:white; text-decoration:none }
-
-#screen { display: inline-block; position: absolute; left: 0; bottom: 0; }
+#screenshot {  font-family:monospace; color:white; text-decoration:none;  margin-right:0.25em; }
 
 #about {
-  position: absolute;
-  right: 0;
-  bottom: 0;
   font-family:monospace;
   color:white;
   text-decoration: none;
   margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+
+#aboutdiv {
+  display: flex;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 21px;
+   line-height: 21px;
+}
+
+#screen {
+  display: inline;
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 21px;
 }
 
 select { margin-left:0.5em; }
