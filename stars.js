@@ -30,7 +30,7 @@ lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(na
 G = 200,
 
 //checkbox bool globals
-gravity = false, tether = false, bg = false, opaque = true, points=false, trail=-1, rainbow=true, mode="l",
+gravity = false, tether = false, bg = false, opaque = true, points=false, trail=0, rainbow=true, mode="l",
 
 //fps diagnostic globals
 frames = 0, fps = 0, date = new Date();
@@ -46,6 +46,7 @@ $(document).ready(function() {
   });
   $('input[type="checkbox"]').each(function(i) {
     this.checked = window[this.id] ? window[this.id].toString() : "";
+    if (this.id == "trail") this.checked = true;
   });
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
   context.lineWidth = thick;
@@ -56,6 +57,7 @@ $(document).mousemove(function(e) { mouse = { x: e.clientX, y: e.clientY	}; });
 
 //Slider and checkbox updates
 $(function() {
+
   $('input[type="range"]').on("input change",function(e) {
     if (e.target.id == 'speed') {
       for (let d of dots) {
@@ -116,8 +118,7 @@ $(function() {
       $('#bottom').css('background', 'transparent');
       $('aside').css('background', 'transparent');
       $('a').css('background', 'transparent');
-     }
-    //console.log(e.target.id + " -> " + window[e.target.id]);
+    }
   });
 
   $('a').hover(function(e) { $('#'+e.target.id).css('color','#f80'); }, function(e) { $('#'+e.target.id).css("color",bg ? "black" : "white"); });
@@ -174,22 +175,21 @@ $(function() {
     maxRadius = maxDist * Math.sqrt(3) / 3;
   }
 
-  //if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  // else {
-  //   // context.save();
-  //   // context.globalAlpha = 0.025;
-  //   // context.globalCompositeOperation='destination-out';
-  //   // context.fillStyle= '#FFF';
-  //   // context.fillRect(0,0,canvas.width, canvas.height);
-  //   // context.restore();
-  //
-  //   var lastImage = context.getImageData(0,0,canvas.width,canvas.height);
-  //   for (var i=3; i < lastImage.data.length; i += 4) lastImage.data[i] -= 1;
-  //   context.putImageData(lastImage,0,0);
-  //   lastImage = null;
-  //   delete lastImage;
-  // }
+  if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
+  else if (trail < 0) {
+    // context.save();
+    // context.globalAlpha = 0.025;
+    // context.globalCompositeOperation='destination-out';
+    // context.fillStyle= '#FFF';
+    // context.fillRect(0,0,canvas.width, canvas.height);
+    // context.restore();
+
+    var lastImage = context.getImageData(0,0,canvas.width,canvas.height);
+    for (var i=3; i < lastImage.data.length; i += 4) lastImage.data[i] -= 1;
+    context.putImageData(lastImage,0,0);
+    lastImage = null;
+    delete lastImage;
+  }
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
   for (var i = 0; i < dots.length; i++) dots[i].ids.clear();

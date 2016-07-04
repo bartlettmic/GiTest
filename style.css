@@ -24,7 +24,7 @@ input[type=checkbox] { display: none; }
 #bg:checked + label::before {  color: black; content:"white"; }
 
 #trail + label { color: white; }
-#trail + label::before { content:"canvas" }
+#trail + label::before { content:"paint" }
 #trail:checked + label::before { content:"clear" }
 #trail:indeterminate + label::before { content:"trails" }
 
