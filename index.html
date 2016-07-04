@@ -17,11 +17,9 @@
 	<!-- Div is really only used for non-semantic generic containers. Try to avoid it when there's a better option -->
 	<main>
 		<!-- Aside is generally used for sidebars or things that should be away from the other shit. We'll go with that for controls. -->
+		<section id="canvas" />
 		<aside>
 			<!-- You only really need ids if you're going to be accessing them individually, but in an array you've got indexes anyway. -->
-			<input type="checkbox" id="opaque" value="opaque">
-			<label for="opaque"></label>
-			<a id="screenshot" href="javascript:;" target="_blank">screenshot </a>
 			<input id="stars"	 type="range"   						min="5"	 max="600" value="0">
 			<input id="maxDiv" type="range" 							min="-30"  max="-2" value="20">
 			<input id="speed"	 type="range"   step="0.25" min="0.25" max="20"	value="5">
@@ -62,8 +60,12 @@
 				<label for="rainbow">rainbow</label>
 			</div>
 		</div>
-		<section id="canvas" />
 		<a id="about" href="https://www.google.com/" target="_blank">about</a>
+		<div id="screen">
+			<input type="checkbox" id="opaque" value="opaque">
+			<label for="opaque"></label>
+			<a id="screenshot" href="javascript:;" target="_blank">screenshot </a>
+		<div>
 	</main>
 </body>
 </html>

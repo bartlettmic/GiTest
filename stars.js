@@ -8,7 +8,6 @@
 • Configuration export and import?
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
-• Tri-state fading
 
 ⚠ Fix on iOS
 */
@@ -112,12 +111,14 @@ $(function() {
     if (trail) {
       $('#bottom').css('background', bg ? "white" : "black");
       $('aside').css('background', bg ? "white" : "black");
-      $('a').css('background', bg ? "white" : "black");
+      $('#about').css('background', bg ? "white" : "black");
+      $('#screen').css('background', bg ? "white" : "black");
     }
     else {
       $('#bottom').css('background', 'transparent');
       $('aside').css('background', 'transparent');
-      $('a').css('background', 'transparent');
+      $('#about').css('background', 'transparent');
+      $('#screen').css('background', 'transparent');
     }
   });
 
@@ -197,7 +198,7 @@ $(function() {
 
   context.font = '10px sans-serif';
   context.fillStyle=bg ? "black" : "white";
-  context.fillText(fps+" Hz",5,window.innerHeight-5);
+  context.fillText(fps+" Hz",5,window.innerHeight-25);
 
   setTimeout(loop, 0);
 }();
