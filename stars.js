@@ -1,15 +1,18 @@
 /*		#TO-DO#
-• Orbit? We have the math!
+○ Orbit math:
     ▶ p'x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
     ▶ p'y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
+
 • Text feedback for sliders → hovering JS text?
+    Nah fam use labels
 • Click to add dot (increase max value)
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
 
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
-• Disable gravity slider when off
+• Asymmetric, bilateral, tetralateral
+• Gravity → Nucleus
 
 ⚠ Fix on iOS
 ⚠ Lock FPS
@@ -29,7 +32,7 @@ maxRadius = maxDist * Math.sqrt(3) / 3,
 speed = 0.25,
 thick = 3.5,
 lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
-G = 100,
+G = 0.5,
 
 //checkbox bool globals
 teleport = false, gravity = false, tether = false, bg = false, opaque = true, points=false, trail=0, rainbow=true, mode="l",
@@ -55,7 +58,7 @@ $(document).ready(function() {
 });
 
 //update mouse position
-$(document).mousemove(function(e) { mouse = { x: e.clientX, y: e.clientY	}; });
+canvas.onmouseup = function(e){ mouse = { x: e.clientX, y: e.clientY }; };
 
 //Slider and checkbox updates
 $(function() {
@@ -103,8 +106,11 @@ $(function() {
     }
     if (e.target.id == 'gravity' && !gravity) {
       for (let d of dots) {
-        d.vel.x = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1);
-        d.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(d.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
+        var velocity = Math.sqrt(Math.pow(d.vel.x, 2) + Math.pow(d.vel.y, 2));
+        d.vel.x *= speed/velocity;
+        d.vel.y *= speed/velocity;
+        //d.vel.x = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1)
+        //d.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(d.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
       }
     }
     document.getElementById("G").disabled = !gravity;
@@ -187,7 +193,15 @@ $(function() {
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
   for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
-  render(context);
+  if (mode != '0') render(context);
+
+  if (points) for (var j = 0; j < dots.length; j++) {
+      context.beginPath();
+      context.arc(dots[j].pos.x, dots[j].pos.y, 1, 0, 2 * Math.PI);
+      context.fillStyle = bg ? "black" : "white";
+      context.fill();
+      context.closePath();
+    }
 
   context.font = '10px sans-serif';
   context.fillStyle=bg ? "black" : "white";
@@ -214,8 +228,10 @@ function Dot(ID) {
 Dot.prototype.update = function() {
   if (gravity) {
     var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
-    this.vel.x -= 0.00667408*G/Math.pow(distance,2)*(this.pos.x - mouse.x);
-    this.vel.y -= 0.00667408*G/Math.pow(distance,2)*(this.pos.y - mouse.y);
+    if (distance >= 1) {
+      this.vel.x += G/Math.pow(distance,2)*(mouse.x - this.pos.x);
+      this.vel.y += G/Math.pow(distance,2)*(mouse.y - this.pos.y);
+    }
   }
   var X = this.vel.x, Y = this.vel.y;
   if (tether && this.ids.size > 0) {
@@ -227,10 +243,28 @@ Dot.prototype.update = function() {
 
   this.pos.x += X; this.pos.y += Y;
   if (teleport) {
-    if (this.pos.x >= window.innerWidth) this.pos.x = 1;
-    else if (this.pos.x <= 0) this.pos.x = window.innerWidth;
-    if (this.pos.y >= window.innerHeight) this.pos.y = 1;
-    else if (this.pos.y <= 1) this.pos.y = window.innerHeight;
+    ported = false;
+    if (this.pos.x >= window.innerWidth) {
+      this.pos.x = 1;
+      ported = true;
+    }
+    else if (this.pos.x <= 0) {
+       this.pos.x = window.innerWidth;
+       ported = true;
+    }
+    if (this.pos.y >= window.innerHeight) {
+      this.pos.y = 1;
+      ported = true;
+    }
+    else if (this.pos.y <= 1) {
+      this.pos.y = window.innerHeight;
+      ported = true;
+    }
+    if (ported) {
+      var velocity = Math.sqrt(Math.pow(this.vel.x, 2) + Math.pow(this.vel.y, 2));
+      this.vel.x *= speed/velocity;
+      this.vel.y *= speed/velocity;
+    }
   }
   else {
     if (this.pos.x <= 0) this.vel.x = Math.abs(this.vel.x);
@@ -242,13 +276,6 @@ Dot.prototype.update = function() {
 
 function render(c) {
   for (var j = 0; j < dots.length; j++) {
-    if (points) {
-      c.beginPath();
-      c.arc(dots[j].pos.x, dots[j].pos.y, 1, 0, 2 * Math.PI);
-      c.fillStyle = bg ? "black" : "white";
-      c.fill();
-      c.closePath();
-    }
     if (lines > 0 && dots[j].ids.size >= lines) continue;
     //if (gravity && Math.sqrt(Math.pow(mouse.x - dots[j].pos.x, 2) + Math.pow(mouse.y - dots[j].pos.y, 2)) <= maxDist*1.5) continue;
     for (var i = j+1; i < dots.length; i++) {
@@ -258,6 +285,7 @@ function render(c) {
       dots[j].ids.add(i);
       dots[i].ids.add(dots[j].id);
 
+      //if ("tacqs".indexOf(mode) > -1 )
       if (mode != 't' && mode != 'a') {
         var grd = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, dots[i].pos.x, dots[i].pos.y),
         s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + 1.1 * (1 - (distance / maxDist)) + ")",

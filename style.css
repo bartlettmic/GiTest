@@ -17,7 +17,7 @@ input[type=checkbox] { display: none; }
 #rainbow + label { margin-right: 0.5em;}
 
 #teleport + label { color: white; }
-#teleport + label::before { content:"reflect" }
+#teleport + label::before { content:"bounce" }
 #teleport:checked + label::before { content:"loop" }
 
 #bg + label::before {  color: white; content:"black"; }
