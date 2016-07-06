@@ -285,8 +285,7 @@ function render(c) {
       dots[j].ids.add(i);
       dots[i].ids.add(dots[j].id);
 
-      //if ("tacqs".indexOf(mode) > -1 )
-      if (mode != 't' && mode != 'a') {
+      if (mode != 't' && mode != 'a' && mode != "oc") {
         var grd = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, dots[i].pos.x, dots[i].pos.y),
         s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + 1.1 * (1 - (distance / maxDist)) + ")",
         s2 = 'rgba(' + dots[i].r + ',' + dots[i].g + ',' + dots[i].b + ',' + 1.1 * (1 - (distance / maxDist)) + ')';
@@ -385,7 +384,15 @@ function render(c) {
             c.lineTo(dots[i].pos.x, dots[i].pos.y);
             c.lineTo(dots[z].pos.x, dots[z].pos.y);
           }
-
+          else if (mode == 'oc') {
+            var DD = 2*(dots[j].pos.x*(dots[i].pos.y-dots[z].pos.y)+dots[i].pos.x*(dots[z].pos.y-dots[j].pos.y)+dots[z].pos.x*(dots[j].pos.y-dots[i].pos.y)),
+            circumcenter = { x: ((Math.pow(dots[j].pos.x, 2)+Math.pow(dots[j].pos.y, 2))*(dots[i].pos.y-dots[z].pos.y) + (Math.pow(dots[i].pos.x, 2)+Math.pow(dots[i].pos.y, 2))*(dots[z].pos.y-dots[j].pos.y) + (Math.pow(dots[z].pos.x, 2)+Math.pow(dots[z].pos.y, 2))*(dots[j].pos.y-dots[i].pos.y))/DD,
+               y: ((Math.pow(dots[j].pos.x, 2)+Math.pow(dots[j].pos.y, 2))*(dots[z].pos.x-dots[i].pos.x) + (Math.pow(dots[i].pos.x, 2)+Math.pow(dots[i].pos.y, 2))*(dots[j].pos.x-dots[z].pos.x) + (Math.pow(dots[z].pos.x, 2)+Math.pow(dots[z].pos.y, 2))*(dots[i].pos.x-dots[j].pos.x))/DD,
+               radius: 0 };
+            circumcenter.radius = Math.sqrt(Math.pow(circumcenter.x-dots[j].pos.x, 2) + Math.pow(circumcenter.y-dots[j].pos.y, 2));
+            if (circumcenter.radius > maxDist) continue;
+            c.arc(circumcenter.x, circumcenter.y, circumcenter.radius, 0, 2 * Math.PI);
+          }
           else {
             c.quadraticCurveTo(center.x, center.y, dots[i].pos.x, dots[i].pos.y);
             c.quadraticCurveTo(center.x, center.y, dots[z].pos.x, dots[z].pos.y);
