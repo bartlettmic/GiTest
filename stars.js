@@ -55,7 +55,6 @@ $(document).ready(function() {
   });
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
   context.lineWidth = thick;
-  alert("init 0");
 });
 
 //update mouse position
@@ -144,7 +143,7 @@ $(function() {
     mode = e.target.value;
     context.lineWidth = thick;
     mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
-    if ("tacqs".indexOf(mode) > -1 ) {
+    if ("taocqs".indexOf(mode) > -1 ) {
       //context.globalCompositeOperation = 'lighten';
       document.getElementById("thick").disabled = true;
     }
@@ -158,7 +157,6 @@ $(function() {
 
 //Loop function
 ! function loop() {
-  alert("loop 1");
   frames++;
   if (new Date()-date >= 1000) {
     date = new Date();
@@ -228,7 +226,6 @@ function Dot(ID) {
 
 //Dot update
 Dot.prototype.update = function() {
-  alert("update 2");
   if (gravity) {
     var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
     if (distance >= 1) {
@@ -278,7 +275,6 @@ Dot.prototype.update = function() {
 };
 
 function render(c) {
-  alert("render 3");
   for (var j = 0; j < dots.length; j++) {
     if (lines > 0 && dots[j].ids.size >= lines) continue;
     //if (gravity && Math.sqrt(Math.pow(mouse.x - dots[j].pos.x, 2) + Math.pow(mouse.y - dots[j].pos.y, 2)) <= maxDist*1.5) continue;
