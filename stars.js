@@ -55,7 +55,6 @@ $(document).ready(function() {
   });
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
   context.lineWidth = thick;
-  console.log("INIT 1");
 });
 
 //update mouse position
@@ -63,7 +62,6 @@ canvas.onmouseup = function(e){ mouse = { x: e.clientX, y: e.clientY }; };
 
 //Slider and checkbox updates
 $(function() {
-console.log("JQUERY 2");
   $('input[type="range"]').on("input change",function(e) {
     if (e.target.id == 'speed') {
       for (let d of dots) {
@@ -158,7 +156,6 @@ console.log("JQUERY 2");
 
 //Loop function
 ! function loop() {
-  console.log("LOOP 3");
   frames++;
   if (new Date()-date >= 1000) {
     date = new Date();
@@ -214,7 +211,6 @@ console.log("JQUERY 2");
 
 //Dot class constructor
 function Dot(ID) {
-  console.log("DOT 4");
   this.pos = { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight };
   this.vel = { x: Math.random() * speed * (Math.round(Math.random()) ? 1 : -1), y: 0 };
   //this.vel.y = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1);
@@ -229,7 +225,6 @@ function Dot(ID) {
 
 //Dot update
 Dot.prototype.update = function() {
-  console.log("UPDATE 5");
   if (gravity) {
     var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
     if (distance >= 1) {
@@ -279,7 +274,6 @@ Dot.prototype.update = function() {
 };
 
 function render(c) {
-  console.log("RENDER 6");
   for (var j = 0; j < dots.length; j++) {
     if (lines > 0 && dots[j].ids.size >= lines) continue;
     //if (gravity && Math.sqrt(Math.pow(mouse.x - dots[j].pos.x, 2) + Math.pow(mouse.y - dots[j].pos.y, 2)) <= maxDist*1.5) continue;
