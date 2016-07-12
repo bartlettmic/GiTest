@@ -41,118 +41,117 @@ teleport = false, gravity = false, tether = false, bg = false, opaque = true, po
 frames = 0, fps = 0, date = new Date();
 
 //Initialize
-$(document).ready(function() {
-  document.getElementById('canvas').appendChild(canvas);
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  $('input[type="range"]').each(function(i) {
-    this.value = window[this.id];
-    if (this.id == "G") document.getElementById("G").disabled = !gravity;
-  });
-  $('input[type="checkbox"]').each(function(i) {
-    this.checked = window[this.id] ? window[this.id].toString() : "";
-    if (this.id == "trail") this.checked = true;
-  });
-  for (var i = 0; i < stars; i++) dots.push(new Dot(i));
-  context.lineWidth = thick;
-});
+document.onreadystatechange = () => {
+  if (document.readyState === 'complete') {
+    document.getElementById('canvas').appendChild(canvas);
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    $('input[type="range"]').each(function(i) {
+      this.value = window[this.id];
+      if (this.id == "G") document.getElementById("G").disabled = !gravity;
+    });
+    $('input[type="checkbox"]').each(function(i) {
+      this.checked = window[this.id] ? window[this.id].toString() : "";
+      if (this.id == "trail") this.checked = true;
+    });
+    for (var i = 0; i < stars; i++) dots.push(new Dot(i));
+    context.lineWidth = thick;
+  }
+};
 
 //update mouse position
 canvas.onmouseup = function(e){ mouse = { x: e.clientX, y: e.clientY }; };
 
-//Slider and checkbox updates
-$(function() {
-  $('input[type="range"]').on("input change",function(e) {
-    if (e.target.id == 'speed') {
-      for (let d of dots) {
-        d.vel.x *= e.target.value / speed;
-        d.vel.y *= e.target.value / speed;
-      }
+function sliderUpdate(e) {
+  if (e.id == 'speed') {
+    for (let d of dots) {
+      d.vel.x *= e.value / speed;
+      d.vel.y *= e.value / speed;
     }
+  }
+  window[e.id] = e.value;
+  console.log(e.id + " -> " + e.value);
+  if (e.id == 'maxDiv') {
+    maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
+    maxRadius = maxDist * Math.sqrt(3) / 3;
+  }
 
-    window[e.target.id] = e.target.value;
-    console.log(e.target.id + " -> " + e.target.value);
+  if (e.id == 'thick') context.lineWidth = thick;
 
-    if (e.target.id == 'maxDiv') {
-      maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
-      maxRadius = maxDist * Math.sqrt(3) / 3;
-    }
+  if (stars < dots.length) {
+    dots = dots.slice(0, stars);
+  } else if (stars > dots.length)
+  for (var i = dots.length; i < stars; i++) dots.push(new Dot(i));
+}
 
-    if (e.target.id == 'thick') context.lineWidth = thick;
 
-    if (stars < dots.length) {
-      dots = dots.slice(0, stars);
-    } else if (stars > dots.length)
-    for (var i = dots.length; i < stars; i++) dots.push(new Dot(i));
-  });
-
-  $('input[type="checkbox"]').change(function(e) {
-    if (e.target.id == 'trail') {
-      if (e.target.readOnly) {
-        e.target.checked=e.target.readOnly=false;
-      }
-      else if (!e.target.checked) {
-        e.target.readOnly=e.target.indeterminate=true;
-      }
-      if (e.target.indeterminate) trail = -1; //trails
-      else if (e.target.checked) trail = 0; //clear
-      else trail = 1; //canvas
-    }
-    else window[e.target.value] = e.target.checked;
-    if (e.target.id == 'tether') {
-      if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
-      else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
-    }
-    if (e.target.id == 'gravity' && !gravity) {
-      for (let d of dots) {
-        var velocity = Math.sqrt(Math.pow(d.vel.x, 2) + Math.pow(d.vel.y, 2));
-        d.vel.x *= speed/velocity;
-        d.vel.y *= speed/velocity;
-        //d.vel.x = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1)
-        //d.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(d.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
-      }
-    }
-    document.getElementById("G").disabled = !gravity;
-    $('body').css("background", bg ? "white" : "black");
-    $('a, #opaque + label, #trail + label, #teleport + label').css("color", bg ? "black" : "white");
-    if (trail) $('#bottom, aside, #aboutdiv, #screen').css('background', bg ? "white" : "black");
-    else $('#bottom, aside, #aboutdiv, #screen').css('background', 'transparent');
-    console.log(e.target.id+" > "+window[e.target.value]);
-  });
-
-  $('a').hover(function(e) { $('#'+e.target.id).css('color','#f80'); }, function(e) { $('#'+e.target.id).css("color",bg ? "black" : "white"); });
-
-  $('#screenshot').click(function(e) {
-    if (!opaque) window.open(canvas.toDataURL());
-    else {
-      var canvas2=document.createElement("canvas"); canvas2.width=canvas.width; canvas2.height=canvas.height;
-      var ctx2=canvas2.getContext("2d")
-      ctx2.putImageData(context.getImageData(0,0,canvas.width,canvas.height), 0, 0);
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.fillStyle = bg ? "white" : "black";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(canvas2,0,0);
-      window.open(canvas.toDataURL());
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(canvas2,0,0);
-    }
-  });
-
-  $('select').change(function(e) {
-    mode = e.target.value;
-    context.lineWidth = thick;
-    mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
-    if ("taocqs".indexOf(mode) > -1 ) {
-      //context.globalCompositeOperation = 'lighten';
-      document.getElementById("thick").disabled = true;
-    }
-    else {
-      //context.globalCompositeOperation = 'source-over';
-      document.getElementById("thick").disabled = false;
-    }
-    console.log(e.target.id + " -> " + window[e.target.id]);
-  });
-})
+//   $('input[type="checkbox"]').change(function(e) {
+//     if (e.target.id == 'trail') {
+//       if (e.target.readOnly) {
+//         e.target.checked=e.target.readOnly=false;
+//       }
+//       else if (!e.target.checked) {
+//         e.target.readOnly=e.target.indeterminate=true;
+//       }
+//       if (e.target.indeterminate) trail = -1; //trails
+//       else if (e.target.checked) trail = 0; //clear
+//       else trail = 1; //canvas
+//     }
+//     else window[e.target.value] = e.target.checked;
+//     if (e.target.id == 'tether') {
+//       if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
+//       else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
+//     }
+//     if (e.target.id == 'gravity' && !gravity) {
+//       for (let d of dots) {
+//         var velocity = Math.sqrt(Math.pow(d.vel.x, 2) + Math.pow(d.vel.y, 2));
+//         d.vel.x *= speed/velocity;
+//         d.vel.y *= speed/velocity;
+//         //d.vel.x = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1)
+//         //d.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(d.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
+//       }
+//     }
+//     document.getElementById("G").disabled = !gravity;
+//     $('body').css("background", bg ? "white" : "black");
+//     $('a, #opaque + label, #trail + label, #teleport + label').css("color", bg ? "black" : "white");
+//     if (trail) $('#bottom, aside, #aboutdiv, #screen').css('background', bg ? "white" : "black");
+//     else $('#bottom, aside, #aboutdiv, #screen').css('background', 'transparent');
+//     console.log(e.target.id+" > "+window[e.target.value]);
+//   });
+//
+//   $('a').hover(function(e) { $('#'+e.target.id).css('color','#f80'); }, function(e) { $('#'+e.target.id).css("color",bg ? "black" : "white"); });
+//
+//   $('#screenshot').click(function(e) {
+//     if (!opaque) window.open(canvas.toDataURL());
+//     else {
+//       var canvas2=document.createElement("canvas"); canvas2.width=canvas.width; canvas2.height=canvas.height;
+//       var ctx2=canvas2.getContext("2d")
+//       ctx2.putImageData(context.getImageData(0,0,canvas.width,canvas.height), 0, 0);
+//       context.clearRect(0, 0, canvas.width, canvas.height);
+//       context.fillStyle = bg ? "white" : "black";
+//       context.fillRect(0, 0, canvas.width, canvas.height);
+//       context.drawImage(canvas2,0,0);
+//       window.open(canvas.toDataURL());
+//       context.clearRect(0, 0, canvas.width, canvas.height);
+//       context.drawImage(canvas2,0,0);
+//     }
+//   });
+//
+//   $('select').change(function(e) {
+//     mode = e.target.value;
+//     context.lineWidth = thick;
+//     mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
+//     if ("taocqs".indexOf(mode) > -1 ) {
+//       //context.globalCompositeOperation = 'lighten';
+//       document.getElementById("thick").disabled = true;
+//     }
+//     else {
+//       //context.globalCompositeOperation = 'source-over';
+//       document.getElementById("thick").disabled = false;
+//     }
+//     console.log(e.target.id + " -> " + window[e.target.id]);
+//   });
+// })
 
 //Loop function
 ! function loop() {
