@@ -14,7 +14,7 @@
 • Asymmetric, bilateral, tetralateral
 • Gravity → Nucleus
 
-⚠ Fix on iOS
+⚠ Fix on iOS -> REMOVE JQUERY
 ⚠ Lock FPS
 */
 
