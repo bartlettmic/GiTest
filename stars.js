@@ -112,7 +112,6 @@ function checkboxUpdate(e) {
   document.getElementById("G").disabled = !gravity;
   document.body.style.backgroundColor = bg ? "white" : "black";
 
-
   let as = document.getElementsByTagName("A");
   for (let a of  as) a.style.color = bg ? "black" : "white";
 
@@ -121,9 +120,13 @@ function checkboxUpdate(e) {
       labels[i].nextSibling.nextSibling.style.color = bg ? "black" : "white";
   }
 
-  //$('a, #opaque + label, #trail + label, #teleport + label').css("color", bg ? "black" : "white");
-  if (trail) $('#bottom, aside, #aboutdiv, #screen').css('background', bg ? "white" : "black");
-  else $('#bottom, aside, #aboutdiv, #screen').css('background', 'transparent');
+  //$('#bottom, aside, #aboutdiv, #screen').css('background', bg ? "white" : "black");
+
+    let UIs = [document.getElementById('bottom'), document.getElementsByTagName('ASIDE')[0], document.getElementById('aboutdiv'), document.getElementById('screen') ];
+    for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : 'transparent';
+  
+
+
 }
 
 
