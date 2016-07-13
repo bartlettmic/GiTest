@@ -84,6 +84,48 @@ function sliderUpdate(e) {
   for (var i = dots.length; i < stars; i++) dots.push(new Dot(i));
 }
 
+function checkboxUpdate(e) {
+  console.log(e.id+" > "+window[e.value]);
+  if (e.id == 'trail') {
+    if (e.readOnly) {
+      e.checked=e.readOnly=false;
+    }
+    else if (!e.checked) {
+      e.readOnly=e.indeterminate=true;
+    }
+    if (e.indeterminate) trail = -1; //trails
+    else if (e.checked) trail = 0; //clear
+    else trail = 1; //canvas
+  }
+  else window[e.value] = e.checked;
+  if (e.id == 'tether') {
+    if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
+    else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
+  }
+  if (e.id == 'gravity' && !gravity) {
+    for (let d of dots) {
+      var velocity = Math.sqrt(Math.pow(d.vel.x, 2) + Math.pow(d.vel.y, 2));
+      d.vel.x *= speed/velocity;
+      d.vel.y *= speed/velocity;
+    }
+  }
+  document.getElementById("G").disabled = !gravity;
+  document.body.style.backgroundColor = bg ? "white" : "black";
+
+
+  let as = document.getElementsByTagName("A");
+  for (let a of  as) a.style.color = bg ? "black" : "white";
+
+  let labels = [document.getElementById('opaque'), document.getElementById('trail'), document.getElementById('teleport')];
+  for (let i=0; i < labels.length; i++) {
+      labels[i].nextSibling.nextSibling.style.color = bg ? "black" : "white";
+  }
+
+  //$('a, #opaque + label, #trail + label, #teleport + label').css("color", bg ? "black" : "white");
+  if (trail) $('#bottom, aside, #aboutdiv, #screen').css('background', bg ? "white" : "black");
+  else $('#bottom, aside, #aboutdiv, #screen').css('background', 'transparent');
+}
+
 
 //   $('input[type="checkbox"]').change(function(e) {
 //     if (e.target.id == 'trail') {
