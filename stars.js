@@ -60,7 +60,7 @@ document.onreadystatechange = () => {
 };
 
 //update mouse position
-canvas.onmouseup = function(e){ mouse = { x: e.clientX, y: e.clientY }; };
+canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.clientY }; console.log(mouse.x); };
 
 function sliderUpdate(e) {
   if (e.id == 'speed') {
@@ -120,13 +120,8 @@ function checkboxUpdate(e) {
       labels[i].nextSibling.nextSibling.style.color = bg ? "black" : "white";
   }
 
-  //$('#bottom, aside, #aboutdiv, #screen').css('background', bg ? "white" : "black");
-
-    let UIs = [document.getElementById('bottom'), document.getElementsByTagName('ASIDE')[0], document.getElementById('aboutdiv'), document.getElementById('screen') ];
-    for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : 'transparent';
-  
-
-
+  let UIs = [document.getElementById('bottom'), document.getElementsByTagName('ASIDE')[0], document.getElementById('aboutdiv'), document.getElementById('screen') ];
+  for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : 'transparent';
 }
 
 
