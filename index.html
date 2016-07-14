@@ -2,13 +2,9 @@
 <html>
 <head>
 	<title>Topaz</title>
-	<meta charset="UTF-8">
-	<!-- Style it up -->
+	<meta charset="UTF-8">	
 	<link rel='stylesheet' type='text/css' href='./style.css'>
 	<link rel='stylesheet' type='text/css' href='./slider.css'>
-	<!-- Grab some jquery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<!-- Throw in stars -->
 	<script src="./stars.js"></script>
 </head>
 <body>
@@ -23,7 +19,7 @@
 			<input oninput='sliderUpdate(this)' id="thick"	 type="range"   step="0.5" 	min="1" 	 max="10"	value="3.5">
 			<input oninput='sliderUpdate(this)' id="lines"	 type="range"   						min="0" 	 max="25"	value="5">
 			<input oninput='sliderUpdate(this)' id="G"			 type="range"   						min="0.5" 	 max="3.5" value="200">
-			<select>
+			<select onchange='dropdownUpdate(this)'>
 				<option value="l">Lines (square)</option>
 				<option value="r">Lines (rounded)</option>
 				<option value="c">Circles</option>
@@ -63,9 +59,9 @@
 			<a onmouseover="this.style.color = '#f80';" onmouseout="this.style.color = bg ? 'black' : 'white';" id="about" href="https://www.google.com/" target="_blank">about</a>
 		</div>
 		<div id="screen">
-			<input type="checkbox" id="opaque" value="opaque">
+			<input onchange='checkboxUpdate(this)' type="checkbox" id="opaque" value="opaque">
 			<label for="opaque"></label>
-			<a onmouseover="this.style.color = '#f80';" onmouseout="this.style.color = bg ? 'black' : 'white';" id="screenshot" href="javascript:;" target="_blank">screenshot</a>
+			<a onmouseover="this.style.color = '#f80';" onmouseout="this.style.color = bg ? 'black' : 'white';" onclick="renderScreenshot()" id="screenshot" href="javascript:;" target="_blank">screenshot</a>
 		<div>
 	</main>
 </body>
