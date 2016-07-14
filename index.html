@@ -2,31 +2,24 @@
 <html>
 <head>
 	<title>Topaz</title>
-	<meta charset="UTF-8">
-	<!-- Style it up -->
+	<meta charset="UTF-8">	
 	<link rel='stylesheet' type='text/css' href='./style.css'>
 	<link rel='stylesheet' type='text/css' href='./slider.css'>
-	<!-- Grab some jquery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>		
-	<!-- Throw in stars -->
 	<script src="./stars.js"></script>
 </head>
-<!-- Actual content on the page goes in the body tag -->
 <body>
-	<!-- Semantically, if you're going to have a "main content" container, you should use main. -->
-	<!-- Div is really only used for non-semantic generic containers. Try to avoid it when there's a better option -->
 	<main>
 		<!-- Aside is generally used for sidebars or things that should be away from the other shit. We'll go with that for controls. -->
 		<section id="canvas" />
 		<aside>
 			<!-- You only really need ids if you're going to be accessing them individually, but in an array you've got indexes anyway. -->
-			<input id="stars"	 type="range"   						min="5"	 max="600" value="0">
-			<input id="maxDiv" type="range" 							min="-30"  max="-2" value="20">
-			<input id="speed"	 type="range"   step="0.25" min="0.25" max="20"	value="5">
-			<input id="thick"	 type="range"   step="0.5" 	min="1" 	 max="10"	value="3.5">
-			<input id="lines"	 type="range"   						min="0" 	 max="25"	value="5">
-			<input id="G"			 type="range"   						min="0.5" 	 max="3.5" value="200">
-			<select>
+			<input oninput='sliderUpdate(this)' id="stars"	 type="range"   						min="5"	 max="600" value="0">
+			<input oninput='sliderUpdate(this)' id="maxDiv" type="range" 							min="-30"  max="-2" value="20">
+			<input oninput='sliderUpdate(this)' id="speed"	 type="range"   step="0.25" min="0.25" max="20"	value="5">
+			<input oninput='sliderUpdate(this)' id="thick"	 type="range"   step="0.5" 	min="1" 	 max="10"	value="3.5">
+			<input oninput='sliderUpdate(this)' id="lines"	 type="range"   						min="0" 	 max="25"	value="5">
+			<input oninput='sliderUpdate(this)' id="G"			 type="range"   						min="0.5" 	 max="3.5" value="200">
+			<select onchange='dropdownUpdate(this)'>
 				<option value="l">Lines (square)</option>
 				<option value="r">Lines (rounded)</option>
 				<option value="c">Circles</option>
@@ -43,33 +36,32 @@
 				<option value="v">Voronoi</option>
 				<option value="0">None</option>
 			</select>
-
 		</aside>
 		<div style="position: absolute; left: 50%; bottom: 0;">
 			<div id="bottom">
-				<input type="checkbox" id="gravity" value="gravity">
+				<input onchange='checkboxUpdate(this)' type="checkbox" id="gravity" value="gravity">
 				<label for="gravity">gravity</label>
-				<input type="checkbox" id="tether" value="tether">
+				<input onchange='checkboxUpdate(this)' type="checkbox" id="tether" value="tether">
 				<label for="tether">viscosity</label>
-				<input type="checkbox" id="teleport" value="teleport">
+				<input onchange='checkboxUpdate(this)' type="checkbox" id="teleport" value="teleport">
 				<label for="teleport"></label>
-				<input type="checkbox" id="bg" value="bg">
+				<input onchange='checkboxUpdate(this)' type="checkbox" id="bg" value="bg">
 				<label for="bg"></label>
-				<input type="checkbox" id="trail" value="trail">
+				<input onchange='checkboxUpdate(this)' type="checkbox" id="trail" value="trail">
 				<label for="trail"></label>
-				<input type="checkbox" id="points" value="points">
+				<input onchange='checkboxUpdate(this)' type="checkbox" id="points" value="points">
 				<label for="points">points</label>
-				<input type="checkbox" id="rainbow" value="rainbow">
+				<input onchange='checkboxUpdate(this)' type="checkbox" id="rainbow" value="rainbow">
 				<label for="rainbow">rainbow</label>
 			</div>
 		</div>
 		<div id="aboutdiv">
-			<a id="about" href="https://www.google.com/" target="_blank">about</a>
+			<a onmouseover="this.style.color = '#f80';" onmouseout="this.style.color = bg ? 'black' : 'white';" id="about" href="https://www.google.com/" target="_blank">about</a>
 		</div>
 		<div id="screen">
-			<input type="checkbox" id="opaque" value="opaque">
+			<input onchange='checkboxUpdate(this)' type="checkbox" id="opaque" value="opaque">
 			<label for="opaque"></label>
-			<a id="screenshot" href="javascript:;" target="_blank">screenshot</a>
+			<a onmouseover="this.style.color = '#f80';" onmouseout="this.style.color = bg ? 'black' : 'white';" onclick="renderScreenshot()" id="screenshot" href="javascript:;" target="_blank">screenshot</a>
 		<div>
 	</main>
 </body>
