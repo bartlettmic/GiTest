@@ -124,7 +124,6 @@ function checkboxUpdate(e) {
   for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : 'transparent';
 }
 
-
 //   $('input[type="checkbox"]').change(function(e) {
 //     if (e.target.id == 'trail') {
 //       if (e.target.readOnly) {
@@ -159,7 +158,7 @@ function checkboxUpdate(e) {
 //     console.log(e.target.id+" > "+window[e.target.value]);
 //   });
 //
-//   $('a').hover(function(e) { $('#'+e.target.id).css('color','#f80'); }, function(e) { $('#'+e.target.id).css("color",bg ? "black" : "white"); });
+//
 //
 //   $('#screenshot').click(function(e) {
 //     if (!opaque) window.open(canvas.toDataURL());
