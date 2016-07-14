@@ -8,13 +8,14 @@
 • Click to add dot (increase max value)
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
+• Replace glitches' fill with drawrect function
 
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
 • Asymmetric, bilateral, tetralateral
 • Gravity → Nucleus
 
-⚠ Fix on iOS -> REMOVE JQUERY
+⚠ Fix on iOS -> debug with fiddle I guess
 ⚠ Lock FPS
 */
 
