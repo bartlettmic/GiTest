@@ -40,31 +40,31 @@ teleport = false, gravity = false, tether = false, bg = false, opaque = true, po
 
 //fps diagnostic globals
 frames = 0, fps = 0, date = new Date();
-//document.getElementById('canvas').appendChild(canvas);
 
 //Initialize
-document.onreadystatechange = function ()  {
-  if (document.readyState === 'complete') {
-    document.getElementById('canvas').appendChild(canvas);
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    for (let e of document.getElementsByTagName("INPUT")) {
-      if (e.type == "range") {
-        e.value = window[e.id];
-        if (e.id == "G") document.getElementById("G").disabled = !gravity;
-      }
-
-      else if (e.type == "checkbox") {
-        e.checked = window[e.id] ? window[e.id].toString() : "";
-        if (e.id == "trail") e.checked = true;
-      }
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('canvas').appendChild(canvas);
+  canvas.height = window.innerHeight;
+  context.lineWidth = thick;
+  maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
+  maxRadius = maxDist * Math.sqrt(3) / 3;
+  for (let e of document.getElementsByTagName("INPUT")) {
+    if (e.type == "range") {
+      e.value = window[e.id];
+      if (e.id == "G") document.getElementById("G").disabled = !gravity;
     }
 
-    for (var i = 0; i < stars; i++) dots.push(new Dot(i));
-    context.lineWidth = thick;
-    console.log("init");
+    else if (e.type == "checkbox") {
+      e.checked = window[e.id] ? window[e.id].toString() : "";
+      if (e.id == "trail") e.checked = true;
+    }
   }
-}
+
+  for (var i = 0; i < stars; i++) dots.push(new Dot(i));
+  console.log(stars+", "+maxDiv+", "+maxRadius+", "+speed+", "+thick+", "+thick);
+  setInterval(loop, 1000 / 60);
+
+});
 
 //update mouse position
 canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.clientY }; };
@@ -162,7 +162,7 @@ renderScreenshot = function() {
 }
 
 //Loop function
-! function loop() {
+function loop() {
   frames++;
   if (new Date()-date >= 1000) {
     date = new Date();
@@ -207,14 +207,14 @@ renderScreenshot = function() {
       context.fillStyle = bg ? "black" : "white";
       context.fill();
       context.closePath();
-    }
+  }
 
   context.font = '10px sans-serif';
   context.fillStyle=bg ? "black" : "white";
   context.fillText(fps+" Hz",5,window.innerHeight-25);
 
-  setTimeout(loop, 0);
-}();
+  //setTimeout(loop, 0);
+}
 
 //Dot class constructor
 function Dot(ID) {
