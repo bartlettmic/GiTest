@@ -40,9 +40,10 @@ teleport = false, gravity = false, tether = false, bg = false, opaque = true, po
 
 //fps diagnostic globals
 frames = 0, fps = 0, date = new Date();
+//document.getElementById('canvas').appendChild(canvas);
 
 //Initialize
-document.onreadystatechange = () => {
+document.onreadystatechange = function ()  {
   if (document.readyState === 'complete') {
     document.getElementById('canvas').appendChild(canvas);
     canvas.width = window.innerWidth;
@@ -61,13 +62,14 @@ document.onreadystatechange = () => {
 
     for (var i = 0; i < stars; i++) dots.push(new Dot(i));
     context.lineWidth = thick;
+    console.log("init");
   }
-};
+}
 
 //update mouse position
-canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.clientY }; console.log(mouse.x); };
+canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.clientY }; };
 
-function sliderUpdate(e) {
+sliderUpdate = function(e) {
   if (e.id == 'speed') {
     for (let d of dots) {
       d.vel.x *= e.value / speed;
@@ -89,7 +91,7 @@ function sliderUpdate(e) {
   for (var i = dots.length; i < stars; i++) dots.push(new Dot(i));
 }
 
-function checkboxUpdate(e) {
+checkboxUpdate = function(e) {
   console.log(e.id+" > "+window[e.value]);
   if (e.id == 'trail') {
     if (e.readOnly) {
@@ -129,7 +131,21 @@ function checkboxUpdate(e) {
   for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : 'transparent';
 }
 
-function renderScreenshot() {
+dropdownUpdate = function(e) {
+    mode = e.value;
+    context.lineWidth = thick;
+    mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
+    if ("taocqs".indexOf(mode) > -1 ) {
+      //context.globalCompositeOperation = 'lighten';
+      document.getElementById("thick").disabled = true;
+    }
+    else {
+      //context.globalCompositeOperation = 'source-over';
+      document.getElementById("thick").disabled = false;
+    }
+}
+
+renderScreenshot = function() {
   if (!opaque) window.open(canvas.toDataURL());
   else {
     var canvas2=document.createElement("canvas"); canvas2.width=canvas.width; canvas2.height=canvas.height;
@@ -143,20 +159,6 @@ function renderScreenshot() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(canvas2,0,0);
   }
-}
-
-function dropdownUpdate(e) {
-    mode = e.value;
-    context.lineWidth = thick;
-    mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
-    if ("taocqs".indexOf(mode) > -1 ) {
-      //context.globalCompositeOperation = 'lighten';
-      document.getElementById("thick").disabled = true;
-    }
-    else {
-      //context.globalCompositeOperation = 'source-over';
-      document.getElementById("thick").disabled = false;
-    }
 }
 
 //Loop function
