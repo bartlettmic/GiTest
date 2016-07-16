@@ -1,14 +1,14 @@
 /*		#TO-DO#
 ○ Orbit math:
-    ▶ p'x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
-    ▶ p'y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
+    ▶ p"x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
+    ▶ p"y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
 
 • Text feedback for sliders → hovering JS text?
     Nah fam use labels
 • Click to add dot (increase max value)
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
-• Replace glitches' fill with drawrect function
+• Replace glitches" fill with drawrect function
 
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
@@ -20,31 +20,34 @@
 */
 
 //Graphics and structural globals
-mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-canvas = document.createElement('canvas'),
-context = canvas.getContext('2d'),
-dots = [],
+mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+canvas = document.createElement("canvas");
+context = canvas.getContext("2d");
+dots = [];
 
 //slider-related globals
-stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50,
-maxDiv = -11.5,
-maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv,
-maxRadius = maxDist * Math.sqrt(3) / 3,
-speed = 0.25,
-thick = 3.5,
-lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5,
-G = 0.5,
+//stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50;
+stars=25;
+maxDiv = -11.5;
+maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
+maxRadius = maxDist * Math.sqrt(3) / 3;
+speed = 0.25;
+thick = 3.5;
+//lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5;
+lines = 3;
+G = 0.5;
 
 //checkbox bool globals
-teleport = false, gravity = false, tether = false, bg = false, opaque = true, points=false, trail=0, rainbow=true, mode="l",
+teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="l";
 
 //fps diagnostic globals
-frames = 0, fps = 0, date = new Date();
+frames = 0; fps = 0; date = new Date();
 
 //Initialize
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('canvas').appendChild(canvas);
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("canvas").appendChild(canvas);
   canvas.height = window.innerHeight;
+  console.log(document.getElementById("canvas").innerHTML);
   context.lineWidth = thick;
   maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
   maxRadius = maxDist * Math.sqrt(3) / 3;
@@ -61,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
-  console.log(stars+", "+maxDiv+", "+maxRadius+", "+speed+", "+thick+", "+thick);
   setInterval(loop, 1000 / 60);
 
 });
@@ -70,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
 canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.clientY }; };
 
 sliderUpdate = function(e) {
-  if (e.id == 'speed') {
+  if (e.id == "speed") {
     for (let d of dots) {
       d.vel.x *= e.value / speed;
       d.vel.y *= e.value / speed;
@@ -78,12 +80,12 @@ sliderUpdate = function(e) {
   }
   window[e.id] = e.value;
   console.log(e.id + " -> " + e.value);
-  if (e.id == 'maxDiv') {
+  if (e.id == "maxDiv") {
     maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
     maxRadius = maxDist * Math.sqrt(3) / 3;
   }
 
-  if (e.id == 'thick') context.lineWidth = thick;
+  if (e.id == "thick") context.lineWidth = thick;
 
   if (stars < dots.length) {
     dots = dots.slice(0, stars);
@@ -93,7 +95,7 @@ sliderUpdate = function(e) {
 
 checkboxUpdate = function(e) {
   console.log(e.id+" > "+window[e.value]);
-  if (e.id == 'trail') {
+  if (e.id == "trail") {
     if (e.readOnly) {
       e.checked=e.readOnly=false;
     }
@@ -105,11 +107,11 @@ checkboxUpdate = function(e) {
     else trail = 1; //canvas
   }
   else window[e.value] = e.checked;
-  if (e.id == 'tether') {
+  if (e.id == "tether") {
     if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
     else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
   }
-  if (e.id == 'gravity' && !gravity) {
+  if (e.id == "gravity" && !gravity) {
     for (let d of dots) {
       var velocity = Math.sqrt(Math.pow(d.vel.x, 2) + Math.pow(d.vel.y, 2));
       d.vel.x *= speed/velocity;
@@ -122,13 +124,13 @@ checkboxUpdate = function(e) {
   let as = document.getElementsByTagName("A");
   for (let a of  as) a.style.color = bg ? "black" : "white";
 
-  let labels = [document.getElementById('opaque'), document.getElementById('trail'), document.getElementById('teleport')];
+  let labels = [document.getElementById("opaque"), document.getElementById("trail"), document.getElementById("teleport")];
   for (let i=0; i < labels.length; i++) {
       labels[i].nextSibling.nextSibling.style.color = bg ? "black" : "white";
   }
 
-  let UIs = [document.getElementById('bottom'), document.getElementsByTagName('ASIDE')[0], document.getElementById('aboutdiv'), document.getElementById('screen') ];
-  for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : 'transparent';
+  let UIs = [document.getElementById("bottom"), document.getElementsByTagName("ASIDE")[0], document.getElementById("aboutdiv"), document.getElementById("screen") ];
+  for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : "transparent";
 }
 
 dropdownUpdate = function(e) {
@@ -136,11 +138,11 @@ dropdownUpdate = function(e) {
     context.lineWidth = thick;
     mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
     if ("taocqs".indexOf(mode) > -1 ) {
-      //context.globalCompositeOperation = 'lighten';
+      //context.globalCompositeOperation = "lighten";
       document.getElementById("thick").disabled = true;
     }
     else {
-      //context.globalCompositeOperation = 'source-over';
+      //context.globalCompositeOperation = "source-over";
       document.getElementById("thick").disabled = false;
     }
 }
@@ -184,8 +186,8 @@ function loop() {
   else if (trail < 0) {
     context.save();
     context.globalAlpha = 0.025;
-    context.globalCompositeOperation='destination-out';
-    context.fillStyle= '#FFF';
+    context.globalCompositeOperation="destination-out";
+    context.fillStyle= "#FFF";
     context.fillRect(0,0,canvas.width, canvas.height);
     context.restore();
     if (frames%8==0) {
@@ -199,7 +201,7 @@ function loop() {
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
   for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
-  if (mode != '0') render(context);
+  if (mode != "0") render(context);
 
   if (points) for (var j = 0; j < dots.length; j++) {
       context.beginPath();
@@ -209,7 +211,7 @@ function loop() {
       context.closePath();
   }
 
-  context.font = '10px sans-serif';
+  context.font = "10px sans-serif";
   context.fillStyle=bg ? "black" : "white";
   context.fillText(fps+" Hz",5,window.innerHeight-25);
 
@@ -291,37 +293,37 @@ function render(c) {
       dots[j].ids.add(i);
       dots[i].ids.add(dots[j].id);
 
-      if (mode != 't' && mode != 'a' && mode != "oc") {
+      if (mode != "t" && mode != "a" && mode != "oc") {
         var grd = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, dots[i].pos.x, dots[i].pos.y),
         s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + 1.1 * (1 - (distance / maxDist)) + ")",
-        s2 = 'rgba(' + dots[i].r + ',' + dots[i].g + ',' + dots[i].b + ',' + 1.1 * (1 - (distance / maxDist)) + ')';
+        s2 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + "," + 1.1 * (1 - (distance / maxDist)) + ")";
 
         grd.addColorStop(0, s1);
         grd.addColorStop(1, s2);
 
-        if (mode.charAt(0) == 'c') {
+        if (mode.charAt(0) == "c") {
           c.beginPath();
           c.arc((dots[j].pos.x + dots[i].pos.x)/2, (dots[j].pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
-          if (mode == 'c') { c.fillStyle = grd; c.fill(); }
+          if (mode == "c") { c.fillStyle = grd; c.fill(); }
           else { c.strokeStyle = grd; c.stroke();}
         }
-        else if (mode.charAt(0) == 'q') {
+        else if (mode.charAt(0) == "q") {
           var center = { x: (dots[j].pos.x + dots[i].pos.x)/2, y: (dots[j].pos.y + dots[i].pos.y)/2 };
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);
           c.lineTo(-(dots[j].pos.y-center.y) + center.x, (dots[j].pos.x-center.x) + center.y);
           c.lineTo(dots[i].pos.x, dots[i].pos.y);
           c.lineTo((dots[j].pos.y-center.y) + center.x, -(dots[j].pos.x-center.x) + center.y);
-          if (mode == 'q') { c.fillStyle = grd; c.fill(); }
+          if (mode == "q") { c.fillStyle = grd; c.fill(); }
           else { c.lineTo(dots[j].pos.x, dots[j].pos.y); c.strokeStyle = grd; c.stroke();}
         }
-        else if (mode.charAt(0) == 's') {
+        else if (mode.charAt(0) == "s") {
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);
           c.lineTo(dots[i].pos.x, dots[j].pos.y);
           c.lineTo(dots[i].pos.x, dots[i].pos.y);
           c.lineTo(dots[j].pos.x, dots[i].pos.y);
-          if (mode == 's') { c.fillStyle = grd; c.fill(); }
+          if (mode == "s") { c.fillStyle = grd; c.fill(); }
           else { c.lineTo(dots[j].pos.x, dots[j].pos.y); c.strokeStyle = grd; c.stroke();}
         }
         else {
@@ -359,9 +361,9 @@ function render(c) {
           alphaB = 1-(center.B/maxRadius),
           alphaC = 1-(center.C/maxRadius);
 
-          if (alphaA > .5) alphaA *= (alphaA-.5)+1;
-          if (alphaB > .5) alphaB *= (alphaB-.5)+1;
-          if (alphaC > .5) alphaC *= (alphaC-.5)+1;
+          if (alphaA > 0.5) alphaA *= (alphaA-0.5)+1;
+          if (alphaB > 0.5) alphaB *= (alphaB-0.5)+1;
+          if (alphaC > 0.5) alphaC *= (alphaC-0.5)+1;
 
           var min = Math.min(alphaA, alphaB, alphaC);
           // if (alphaA != min) alphaA *= min;
@@ -386,11 +388,11 @@ function render(c) {
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);
 
-          if (mode == 't') {
+          if (mode == "t") {
             c.lineTo(dots[i].pos.x, dots[i].pos.y);
             c.lineTo(dots[z].pos.x, dots[z].pos.y);
           }
-          else if (mode == 'oc') {
+          else if (mode == "oc") {
             var DD = 2*(dots[j].pos.x*(dots[i].pos.y-dots[z].pos.y)+dots[i].pos.x*(dots[z].pos.y-dots[j].pos.y)+dots[z].pos.x*(dots[j].pos.y-dots[i].pos.y)),
             circumcenter = { x: ((Math.pow(dots[j].pos.x, 2)+Math.pow(dots[j].pos.y, 2))*(dots[i].pos.y-dots[z].pos.y) + (Math.pow(dots[i].pos.x, 2)+Math.pow(dots[i].pos.y, 2))*(dots[z].pos.y-dots[j].pos.y) + (Math.pow(dots[z].pos.x, 2)+Math.pow(dots[z].pos.y, 2))*(dots[j].pos.y-dots[i].pos.y))/DD,
                y: ((Math.pow(dots[j].pos.x, 2)+Math.pow(dots[j].pos.y, 2))*(dots[z].pos.x-dots[i].pos.x) + (Math.pow(dots[i].pos.x, 2)+Math.pow(dots[i].pos.y, 2))*(dots[j].pos.x-dots[z].pos.x) + (Math.pow(dots[z].pos.x, 2)+Math.pow(dots[z].pos.y, 2))*(dots[i].pos.x-dots[j].pos.x))/DD,
