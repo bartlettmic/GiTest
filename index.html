@@ -10,7 +10,6 @@
 <body>
 	<main>
 		<!-- Aside is generally used for sidebars or things that should be away from the other shit. We'll go with that for controls. -->
-		<section id="canvas"/>		
 		<aside>
 			<!-- You only really need ids if you're going to be accessing them individually, but in an array you've got indexes anyway. -->
 			<input oninput='sliderUpdate(this)' id="stars"	 type="range"   						min="5"	 max="600" value="0">
@@ -63,6 +62,7 @@
 			<label for="opaque"></label>
 			<a onmouseover="this.style.color = '#f80';" onmouseout="this.style.color = bg ? 'black' : 'white';" onclick="renderScreenshot()" id="screenshot" href="javascript:;" target="_blank">screenshot</a>
 		</div>
+		<section id="canvas">	</section>
 	</main>
 </body>
 </html>
