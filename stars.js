@@ -47,7 +47,9 @@ frames = 0; fps = 0; date = new Date();
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("canvas").appendChild(canvas);
   canvas.height = window.innerHeight;
-  console.log(document.getElementById("canvas").innerHTML);
+  //console.log(document.getElementById("canvas").innerHTML);
+  //console.log();
+
   context.lineWidth = thick;
   maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
   maxRadius = maxDist * Math.sqrt(3) / 3;
@@ -65,13 +67,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
   setInterval(loop, 1000 / 60);
-
 });
 
 //update mouse position
 canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.clientY }; };
 
-sliderUpdate = function(e) {
+function sliderUpdate(e) {
   if (e.id == "speed") {
     for (let d of dots) {
       d.vel.x *= e.value / speed;
@@ -91,9 +92,10 @@ sliderUpdate = function(e) {
     dots = dots.slice(0, stars);
   } else if (stars > dots.length)
   for (var i = dots.length; i < stars; i++) dots.push(new Dot(i));
+  showLabel(e);
 }
 
-checkboxUpdate = function(e) {
+function checkboxUpdate(e) {
   console.log(e.id+" > "+window[e.value]);
   if (e.id == "trail") {
     if (e.readOnly) {
@@ -131,9 +133,11 @@ checkboxUpdate = function(e) {
 
   let UIs = [document.getElementById("bottom"), document.getElementsByTagName("ASIDE")[0], document.getElementById("aboutdiv"), document.getElementById("screen") ];
   for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : "transparent";
+
+  showLabel(e);
 }
 
-dropdownUpdate = function(e) {
+function dropdownUpdate(e) {
     mode = e.value;
     context.lineWidth = thick;
     mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
@@ -145,9 +149,11 @@ dropdownUpdate = function(e) {
       //context.globalCompositeOperation = "source-over";
       document.getElementById("thick").disabled = false;
     }
+
+    showLabel(e);
 }
 
-renderScreenshot = function() {
+function renderScreenshot() {
   if (!opaque) window.open(canvas.toDataURL());
   else {
     var canvas2=document.createElement("canvas"); canvas2.width=canvas.width; canvas2.height=canvas.height;
@@ -161,6 +167,18 @@ renderScreenshot = function() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(canvas2,0,0);
   }
+}
+
+function showLabel(e) {
+  //console.log(e.getBoundingClientRect().width);
+  //console.log(document.body.getBoundingClientRect().bottom+" : "+window.innerHeight);
+  var nfo = document.getElementById("nfo");
+  var rect = e.getBoundingClientRect();
+  nfo.innerHTML = String(Math.random()*10)+" "+String(Math.random()*10)+" "+String(Math.random()*10);
+  console.log(rect.width);
+  nfo.style.width = String(rect.width)+"px";
+  //nfo.style.left = ;
+  nfo.style.top = '50%';
 }
 
 //Loop function

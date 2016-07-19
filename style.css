@@ -64,6 +64,11 @@ input[type=checkbox] { display: none; }
 
 select { margin-left:0.5em; }
 
-/*option {
+#nfo {
+  font-family:monospace;
   color: white;
-}*/
+  position: absolute;
+  display: inline-block;
+  height: 100%;
+  text-align: center;
+}
