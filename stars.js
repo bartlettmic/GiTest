@@ -37,15 +37,14 @@ thick = 3.5;
 //lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5;
 lines = 3;
 G = 0.5;
+nfoTime = 0;
+nfoE = null;
 
 //checkbox bool globals
 teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="l";
 
-//User feedback text
-Label = { x:0, y:0, time: new Date() };
-
 //fps diagnostic globals
-frames = 0; fps = 0; date = new Date();
+frames = 0; fps = 0; lastSecond = new Date();
 
 //Initialize
 document.addEventListener("DOMContentLoaded", function() {
@@ -126,6 +125,7 @@ function checkboxUpdate(e) {
   }
   document.getElementById("G").disabled = !gravity;
   document.body.style.backgroundColor = bg ? "white" : "black";
+  document.getElementById("nfo").style.color = bg ? "black" : "white";
 
   let as = document.getElementsByTagName("A");
   for (let a of  as) a.style.color = bg ? "black" : "white";
@@ -137,8 +137,6 @@ function checkboxUpdate(e) {
 
   let UIs = [document.getElementById("bottom"), document.getElementsByTagName("ASIDE")[0], document.getElementById("aboutdiv"), document.getElementById("screen") ];
   for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : "transparent";
-
-  showLabel(e);
 }
 
 function dropdownUpdate(e) {
@@ -153,8 +151,6 @@ function dropdownUpdate(e) {
       //context.globalCompositeOperation = "source-over";
       document.getElementById("thick").disabled = false;
     }
-
-    showLabel(e);
 }
 
 function renderScreenshot() {
@@ -174,37 +170,44 @@ function renderScreenshot() {
 }
 
 function showLabel(e) {
-  //console.log(e.getBoundingClientRect().width);
-  //console.log(document.body.getBoundingClientRect().bottom+" : "+window.innerHeight);
   var nfo = document.getElementById("nfo");
   var rect = e.getBoundingClientRect();
-  nfo.innerHTML = "1 22 333 4444 55555 666666 7777777 88888888 999999999 1010101010";
-  if (rect.width == 0) rect = e.nextSibling.nextSibling.getBoundingClientRect();
+  nfo.innerHTML = String(e.id)+" = "+String(e.value);
   nfo.style.maxWidth = String(rect.width)+"px";
-  console.log(rect.width);
-  console.log(rect.left);
+  nfo.style.minWidth = String(rect.width)+"px";
   nfo.style.left = String(rect.left)+'px';
-
-  if (rect.bottom == 0) {
-    nfo.style.top = '500px';
-  }
-  else {
   nfo.style.top = String(rect.bottom)+'px';
-  }
+   nfoTime = new Date();
+   nfoE = e;
+   nfo.style.opacity = 1;
 }
 
 //Loop function
 function loop() {
   frames++;
-  if (new Date()-date >= 1000) {
-    date = new Date();
+  var date = new Date();
+  if (date - lastSecond >= 1000) {
+    lastSecond =  date
     fps = frames;
     frames = 0;
     //console.log(Math.random()*100+"   "+fps);
   }
+  if (nfoTime) {
+    var nfo = document.getElementById("nfo");
+    if (date - nfoTime >= 1500) nfo.innerHTML = "", nfoTime = 0;
+    else if (date - nfoTime >= 500) nfo.style.opacity = 1 - (date - nfoTime - 500)/1000;
+  }
 
   // update screen size
   if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
+    if (nfoTime) {
+      var nfo = document.getElementById("nfo");
+      var rect = nfoE.getBoundingClientRect();
+      nfo.style.maxWidth = String(rect.width)+"px";
+      nfo.style.minWidth = String(rect.width)+"px";
+      nfo.style.left = String(rect.left)+'px';
+      nfo.style.top = String(rect.bottom)+'px';
+    }
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     context.lineWidth = thick;
