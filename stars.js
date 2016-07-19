@@ -9,6 +9,7 @@
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
 • Replace glitches" fill with drawrect function
+• Full black/white dots
 
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
@@ -39,6 +40,9 @@ G = 0.5;
 
 //checkbox bool globals
 teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="l";
+
+//User feedback text
+Label = { x:0, y:0, time: new Date() };
 
 //fps diagnostic globals
 frames = 0; fps = 0; date = new Date();
@@ -174,11 +178,19 @@ function showLabel(e) {
   //console.log(document.body.getBoundingClientRect().bottom+" : "+window.innerHeight);
   var nfo = document.getElementById("nfo");
   var rect = e.getBoundingClientRect();
-  nfo.innerHTML = String(Math.random()*10)+" "+String(Math.random()*10)+" "+String(Math.random()*10);
+  nfo.innerHTML = "1 22 333 4444 55555 666666 7777777 88888888 999999999 1010101010";
+  if (rect.width == 0) rect = e.nextSibling.nextSibling.getBoundingClientRect();
+  nfo.style.maxWidth = String(rect.width)+"px";
   console.log(rect.width);
-  nfo.style.width = String(rect.width)+"px";
-  //nfo.style.left = ;
-  nfo.style.top = '50%';
+  console.log(rect.left);
+  nfo.style.left = String(rect.left)+'px';
+
+  if (rect.bottom == 0) {
+    nfo.style.top = '500px';
+  }
+  else {
+  nfo.style.top = String(rect.bottom)+'px';
+  }
 }
 
 //Loop function
