@@ -17,8 +17,8 @@ input[type=checkbox] { display: none; }
 #rainbow + label { margin-right: 0.5em;}
 
 #teleport + label { color: white; }
-#teleport + label::before { content:"bounce" }
-#teleport:checked + label::before { content:"loop" }
+#teleport + label::before { content:"edge-bounce" }
+#teleport:checked + label::before { content:"edge-loop" }
 
 #bg + label::before {  color: white; content:"black"; }
 #bg:checked + label::before {  color: black; content:"white"; }
@@ -34,7 +34,7 @@ input[type=checkbox] { display: none; }
 
 #canvas { width: 100%; height: 100%; background: 100%; }
 
-#bottom { position: relative;  left: -50%; height: 21px;}
+#bottom { position: relative;  left: -50%; height: 21px; display: inline; white-space: nowrap;}
 
 #screenshot {  font-family:monospace; color:white; text-decoration:none;  margin-right:0.25em; }
 

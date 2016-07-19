@@ -17,7 +17,6 @@
 • Gravity → Nucleus
 
 ⚠ Fix on iOS -> debug with fiddle I guess
-⚠ Lock FPS
 */
 
 //Graphics and structural globals
@@ -36,7 +35,7 @@ speed = 0.25;
 thick = 3.5;
 //lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5;
 lines = 3;
-G = 0.5;
+G = 2.5;
 nfoTime = 0;
 nfoE = null;
 
@@ -83,7 +82,6 @@ function sliderUpdate(e) {
     }
   }
   window[e.id] = e.value;
-  console.log(e.id + " -> " + e.value);
   if (e.id == "maxDiv") {
     maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
     maxRadius = maxDist * Math.sqrt(3) / 3;
@@ -213,6 +211,7 @@ function loop() {
     context.lineWidth = thick;
     maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
     maxRadius = maxDist * Math.sqrt(3) / 3;
+    mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
   }
 
   if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
