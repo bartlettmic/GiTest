@@ -3,8 +3,6 @@
     ▶ p"x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
     ▶ p"y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
 
-• Text feedback for sliders → hovering JS text?
-    Nah fam use labels
 • Click to add dot (increase max value)
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
@@ -15,6 +13,7 @@
 • Rainbow or Monochrome option for dots
 • Asymmetric, bilateral, tetralateral
 • Gravity → Nucleus
+• Add text input toggleable over sliders
 
 ⚠ Fix on iOS -> debug with fiddle I guess
 */
@@ -34,10 +33,9 @@ maxRadius = maxDist * Math.sqrt(3) / 3;
 speed = 0.25;
 thick = 3.5;
 //lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5;
-lines = 3;
+lines = 5;
 G = 2.5;
-nfoTime = 0;
-nfoE = null;
+nfo = { E: null,  time: 0,  e: null };
 
 //checkbox bool globals
 teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="l";
@@ -49,12 +47,15 @@ frames = 0; fps = 0; lastSecond = new Date();
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("canvas").appendChild(canvas);
   canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
   //console.log(document.getElementById("canvas").innerHTML);
   //console.log();
 
   context.lineWidth = thick;
   maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
   maxRadius = maxDist * Math.sqrt(3) / 3;
+  nfo.E = document.getElementById("nfo");
+
   for (let e of document.getElementsByTagName("INPUT")) {
     if (e.type == "range") {
       e.value = window[e.id];
@@ -168,16 +169,65 @@ function renderScreenshot() {
 }
 
 function showLabel(e) {
-  var nfo = document.getElementById("nfo");
+  //var nfo = document.getElementById("nfo");
   var rect = e.getBoundingClientRect();
-  nfo.innerHTML = String(e.id)+" = "+String(e.value);
-  nfo.style.maxWidth = String(rect.width)+"px";
-  nfo.style.minWidth = String(rect.width)+"px";
-  nfo.style.left = String(rect.left)+'px';
-  nfo.style.top = String(rect.bottom)+'px';
-   nfoTime = new Date();
-   nfoE = e;
-   nfo.style.opacity = 1;
+  switch (e.id) {
+    case "stars":
+      nfo.E.innerHTML = "population: "+e.value;
+      break;
+    case "maxDiv":
+      nfo.E.innerHTML = "max connection length: "+Math.round(maxDist);
+      break;
+    case "speed":
+      nfo.E.innerHTML = "speed: "+Number(e.value).toFixed(2);
+      break;
+    case "thick":
+      nfo.E.innerHTML = "line thickness: "+Number(e.value).toFixed(1);
+      break;
+    case "lines":
+      nfo.E.innerHTML = "connections per point: "+(e.value==0 ? "&infin;" : e.value);
+      break;
+    case "G":
+      nfo.E.innerHTML = "gravity strength: "+e.value;
+      break;
+    default:
+    nfo.E.innerHTML = e.id+" = "+e.value;
+  }
+  nfo.E.style.maxWidth = String(rect.width)+"px";
+  nfo.E.style.minWidth = String(rect.width)+"px";
+  nfo.E.style.left = String(rect.left)+'px';
+  nfo.E.style.top = String(rect.bottom)+'px';
+  nfo.time = new Date();
+  nfo.e = e;
+  nfo.E.style.opacity = 1;
+  var id = setInterval(fadeLabel, 5);
+  function fadeLabel() {
+    var date = new Date();
+    if (date - nfo.time >= 1500) {
+      nfo.E.innerHTML = "";
+      nfo.time = 0;
+      clearInterval(id);
+    } else {
+      nfo.E.style.opacity = 1 - (date - nfo.time - 500)/1000;
+    }
+  }
+}
+
+function resizeScreen() {
+  if (nfo.time) {
+    //var nfo = document.getElementById("nfo");
+    var rect = nfo.e.getBoundingClientRect();
+    nfo.E.style.maxWidth = String(rect.width)+"px";
+    nfo.E.style.minWidth = String(rect.width)+"px";
+    nfo.E.style.left = String(rect.left)+'px';
+    nfo.E.style.top = String(rect.bottom)+'px';
+  }
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  context.lineWidth = thick;
+  maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
+  maxRadius = maxDist * Math.sqrt(3) / 3;
+  mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
 }
 
 //Loop function
@@ -189,29 +239,6 @@ function loop() {
     fps = frames;
     frames = 0;
     //console.log(Math.random()*100+"   "+fps);
-  }
-  if (nfoTime) {
-    var nfo = document.getElementById("nfo");
-    if (date - nfoTime >= 1500) nfo.innerHTML = "", nfoTime = 0;
-    else if (date - nfoTime >= 500) nfo.style.opacity = 1 - (date - nfoTime - 500)/1000;
-  }
-
-  // update screen size
-  if (window.innerWidth != canvas.width || window.innerHeight != canvas.height) {
-    if (nfoTime) {
-      var nfo = document.getElementById("nfo");
-      var rect = nfoE.getBoundingClientRect();
-      nfo.style.maxWidth = String(rect.width)+"px";
-      nfo.style.minWidth = String(rect.width)+"px";
-      nfo.style.left = String(rect.left)+'px';
-      nfo.style.top = String(rect.bottom)+'px';
-    }
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    context.lineWidth = thick;
-    maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
-    maxRadius = maxDist * Math.sqrt(3) / 3;
-    mode == "r" ? context.lineCap = "round" : context.lineCap = "square";
   }
 
   if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
