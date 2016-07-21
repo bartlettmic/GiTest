@@ -67,15 +67,13 @@ select { margin-left:0.5em; }
 #nfo {
   font-family:monospace;
   color: white;
-  background: rgba(100, 100, 100, 0.5);
+  background: rgba(100, 100, 100, 0.65);
   border-radius: 4px;
   position: absolute;
   display: inline-block;
   height: 100%;
   text-align: center;
-  font-size: 100%;
-  /*overflow-x: hidden;*/
+  overflow-x: hidden;
   height:auto;
   min-width: 0;
-  background
 }

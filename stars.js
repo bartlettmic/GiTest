@@ -7,13 +7,12 @@
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
 • Replace glitches" fill with drawrect function
-• Full black/white dots
+• Add text input toggleable over sliders
 
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
 • Asymmetric, bilateral, tetralateral
 • Gravity → Nucleus
-• Add text input toggleable over sliders
 
 ⚠ Fix on iOS -> debug with fiddle I guess
 */
@@ -27,7 +26,7 @@ dots = [];
 //slider-related globals
 //stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50;
 stars=25;
-maxDiv = -11.5;
+maxDiv = -5.5;
 maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
 maxRadius = maxDist * Math.sqrt(3) / 3;
 speed = 0.25;
@@ -115,11 +114,16 @@ function checkboxUpdate(e) {
     if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
     else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
   }
-  if (e.id == "gravity" && !gravity) {
-    for (let d of dots) {
-      var velocity = Math.sqrt(Math.pow(d.vel.x, 2) + Math.pow(d.vel.y, 2));
-      d.vel.x *= speed/velocity;
-      d.vel.y *= speed/velocity;
+  if (e.id == "gravity") {
+    if (!gravity) {
+      for (let d of dots) {
+        var velocity = Math.sqrt(Math.pow(d.vel.x, 2) + Math.pow(d.vel.y, 2));
+        d.vel.x *= speed/velocity;
+        d.vel.y *= speed/velocity;
+      }
+    }
+    else {
+      showLabel(document.getElementById('G'));
     }
   }
   document.getElementById("G").disabled = !gravity;
@@ -288,7 +292,8 @@ function Dot(ID) {
   this.b = Math.round(Math.random() * 255);
   this.id = ID;
   this.ids = new Set();
-  if ((this.r+this.g+this.b)/3 < 50) this.r=255, this.g=64, this.b = 0;
+  //if ((this.r+this.g+this.b)/3 < 50) this.r=0, this.g=0, this.b = 0;
+  //if ((this.r+this.g+this.b)/3 > 200) this.r=255, this.g=255, this.b = 255;
 }
 
 //Dot update
