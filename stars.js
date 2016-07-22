@@ -8,6 +8,8 @@
 • Configuration export and import?
 • Replace glitches" fill with drawrect function
 • Add text input toggleable over sliders
+• Click for explode
+• Keyboard shortcuts
 
     ▼ Bottom configuration section
 • Rainbow or Monochrome option for dots
@@ -19,8 +21,8 @@
 
 //Graphics and structural globals
 mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-canvas = document.createElement("canvas");
-context = canvas.getContext("2d");
+canvas = document.getElementById("canv");
+context = null;
 dots = [];
 
 //slider-related globals
@@ -43,8 +45,9 @@ teleport = false; gravity = false; tether = false; bg = false; opaque = true; po
 frames = 0; fps = 0; lastSecond = new Date();
 
 //Initialize
-document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("canvas").appendChild(canvas);
+function init() {
+  //document.getElementById("canvas").appendChild(canvas);
+  context = canvas.getContext("2d");
   canvas.height = window.innerHeight;
   canvas.width = window.innerWidth;
   //console.log(document.getElementById("canvas").innerHTML);
@@ -69,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
   setInterval(loop, 1000 / 60);
-});
+}
 
 //update mouse position
 canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.clientY }; };

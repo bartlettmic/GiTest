@@ -5,13 +5,13 @@
 	<meta charset="UTF-8">
 	<link rel='stylesheet' type='text/css' href='./style.css'>
 	<link rel='stylesheet' type='text/css' href='./slider.css'>
-	<script src="./stars.js"></script>
 </head>
-<body onresize='resizeScreen()'>
-	<main>
+<body onload='init()' onresize='resizeScreen()'>
+		<main>
 		<!-- Aside is generally used for sidebars or things that should be away from the other shit. We'll go with that for controls. -->
 		<aside>
 			<!-- You only really need ids if you're going to be accessing them individually, but in an array you've got indexes anyway. -->
+
 			<div id="nfo"></div>
 			<input oninput='sliderUpdate(this)'  onmouseover='showLabel(this)' id="stars"	 type="range"   						min="5"	 max="600" value="0">
 			<input oninput='sliderUpdate(this)'  onmouseover='showLabel(this)' id="maxDiv" type="range" 							min="-30"  max="-2" value="20">
@@ -63,8 +63,9 @@
 			<label for="opaque"></label>
 			<a onmouseover="this.style.color = '#f80';" onmouseout="this.style.color = bg ? 'black' : 'white';" onclick="renderScreenshot()" id="screenshot" href="javascript:;" target="_blank">screenshot</a>
 		</div>
-		<section id="canvas"></section>
-
+		<!-- <section id="canvas"></section> -->
+		<canvas id="canv"></canvas>
+		<script src="./stars.js"></script>
 	</main>
 </body>
 </html>
