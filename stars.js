@@ -3,10 +3,8 @@
     ▶ p"x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
     ▶ p"y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
 
-• Click to add dot (increase max value)
 • Voronoi, Deluanay, Polygon, Circumcircles
 • Configuration export and import?
-• Replace glitches" fill with drawrect function
 • Add text input toggleable over sliders
 • Click for explode
 • Keyboard shortcuts
@@ -46,13 +44,9 @@ frames = 0; fps = 0; lastSecond = new Date();
 
 //Initialize
 function init() {
-  //document.getElementById("canvas").appendChild(canvas);
   context = canvas.getContext("2d");
   canvas.height = window.innerHeight;
   canvas.width = window.innerWidth;
-  //console.log(document.getElementById("canvas").innerHTML);
-  //console.log();
-
   context.lineWidth = thick;
   maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
   maxRadius = maxDist * Math.sqrt(3) / 3;
@@ -443,14 +437,16 @@ function render(c) {
           var cA = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + alphaA + ")",
           cB = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + "," + alphaB + ")",
           cC = "rgba(" + dots[z].r + "," + dots[z].g + "," + dots[z].b + "," + alphaC + ")",
-          c0 = "rgba(0,0,0,0)";
+          cA0 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + ",0)",
+          cB0 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + ",0)",
+          cC0 = "rgba(" + dots[z].r + "," + dots[z].g + "," + dots[z].b + ",0)";
 
           gA.addColorStop(0, cA);
-          gA.addColorStop(1, c0);
+          gA.addColorStop(1, cA0);
           gB.addColorStop(0, cB);
-          gB.addColorStop(1, c0);
+          gB.addColorStop(1, cB0);
           gC.addColorStop(0, cC);
-          gC.addColorStop(1, c0);
+          gC.addColorStop(1, cC0);
 
           c.beginPath();
           c.moveTo(dots[j].pos.x, dots[j].pos.y);

@@ -8,6 +8,8 @@ main {  height: 100vh; width: 100vw; }
 
 aside { display: flex; position: absolute; left: 0; right: 0; }
 
+select { margin-left:0.5em; }
+
 input[type="range"] { flex-grow: 1; min-width: 30px; background: transparent; }
 
 input[type=checkbox]:checked + label { color: #f80; font-family:monospace; }
@@ -61,8 +63,6 @@ input[type=checkbox] { display: none; }
   left: 0; bottom: 0;
   height: 21px;
 }
-
-select { margin-left:0.5em; }
 
 #nfo {
   font-family:monospace;
