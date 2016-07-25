@@ -7,6 +7,7 @@
 • Configuration export and import?
 • Add text input toggleable over sliders
 • Click for explode
+  > Toggle stir and explodej
 • Keyboard shortcuts
 
     ▼ Bottom configuration section
@@ -16,6 +17,7 @@
 
 ⚠ Fix on iOS -> debug with fiddle I guess
 */
+
 
 //Graphics and structural globals
 mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -37,7 +39,7 @@ G = 2.5;
 nfo = { E: null,  time: 0,  e: null };
 
 //checkbox bool globals
-teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="l";
+teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="v";
 
 //fps diagnostic globals
 frames = 0; fps = 0; lastSecond = new Date();
@@ -74,8 +76,8 @@ canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.client
 function sliderUpdate(e) {
   if (e.id == "speed") {
     for (let d of dots) {
-      d.vel.x *= e.value / speed;
-      d.vel.y *= e.value / speed;
+      d.vx *= e.value / speed;
+      d.vy *= e.value / speed;
     }
   }
   window[e.id] = e.value;
@@ -108,15 +110,15 @@ function checkboxUpdate(e) {
   }
   else window[e.value] = e.checked;
   if (e.id == "tether") {
-    if (tether) for (let d of dots) { d.vel.x *= 2; d.vel.y *= 2; }
-    else for (let d of dots) { d.vel.x /= 2; d.vel.y /= 2; }
+    if (tether) for (let d of dots) { d.vx *= 2; d.vy *= 2; }
+    else for (let d of dots) { d.vx /= 2; d.vy /= 2; }
   }
   if (e.id == "gravity") {
     if (!gravity) {
       for (let d of dots) {
-        var velocity = Math.sqrt(Math.pow(d.vel.x, 2) + Math.pow(d.vel.y, 2));
-        d.vel.x *= speed/velocity;
-        d.vel.y *= speed/velocity;
+        var velocity = Math.sqrt(Math.pow(d.vx, 2) + Math.pow(d.vy, 2));
+        d.vx *= speed/velocity;
+        d.vy *= speed/velocity;
       }
     }
     else {
@@ -261,11 +263,12 @@ function loop() {
 
   for (var i = 0; i < dots.length; i++) dots[i].update();
   for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
-  if (mode != "0") render(context);
+  if (mode == 'v' || mode == 'd') { init_delaunay(); vrender(context); }
+  else if (mode != "0") render(context);
 
   if (points) for (var j = 0; j < dots.length; j++) {
       context.beginPath();
-      context.arc(dots[j].pos.x, dots[j].pos.y, 1, 0, 2 * Math.PI);
+      context.arc(dots[j].x, dots[j].y, 1, 0, 2 * Math.PI);
       context.fillStyle = bg ? "black" : "white";
       context.fill();
       context.closePath();
@@ -280,10 +283,10 @@ function loop() {
 
 //Dot class constructor
 function Dot(ID) {
-  this.pos = { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight };
-  this.vel = { x: Math.random() * speed * (Math.round(Math.random()) ? 1 : -1), y: 0 };
-  //this.vel.y = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1);
-  this.vel.y = Math.sqrt(Math.pow(speed, 2) - Math.pow(this.vel.x, 2)) * (Math.round(Math.random()) ? 1 : -1)
+  this.x = Math.random() * window.innerWidth;
+  this.y = Math.random() * window.innerHeight;
+  this.vx = Math.random() * speed * (Math.round(Math.random()) ? 1 : -1);
+  this.vy = Math.sqrt(Math.pow(speed, 2) - Math.pow(this.vx, 2)) * (Math.round(Math.random()) ? 1 : -1)
   this.r = Math.round(Math.random() * 255);
   this.g = Math.round(Math.random() * 255);
   this.b = Math.round(Math.random() * 255);
@@ -291,106 +294,108 @@ function Dot(ID) {
   this.ids = new Set();
   //if ((this.r+this.g+this.b)/3 < 50) this.r=0, this.g=0, this.b = 0;
   //if ((this.r+this.g+this.b)/3 > 200) this.r=255, this.g=255, this.b = 255;
+  this.is_infinity = false;
+  this.payload = {"velocity":0, "painted":false};
 }
 
 //Dot update
 Dot.prototype.update = function() {
   if (gravity) {
-    var distance = Math.sqrt(Math.pow(mouse.x - this.pos.x, 2) + Math.pow(mouse.y - this.pos.y, 2));
+    var distance = Math.sqrt(Math.pow(mouse.x - this.x, 2) + Math.pow(mouse.y - this.y, 2));
     if (distance >= 1) {
-      this.vel.x += G/Math.pow(distance,2)*(mouse.x - this.pos.x);
-      this.vel.y += G/Math.pow(distance,2)*(mouse.y - this.pos.y);
+      this.vx += G/Math.pow(distance,2)*(mouse.x - this.x);
+      this.vy += G/Math.pow(distance,2)*(mouse.y - this.y);
     }
   }
-  var X = this.vel.x, Y = this.vel.y;
+  var X = this.vx, Y = this.vy;
   if (tether && this.ids.size > 0) {
-    for (let d of this.ids) { if (!dots[d]) break; X += dots[d].vel.x; Y += dots[d].vel.y; }
+    for (let d of this.ids) { if (!dots[d]) break; X += dots[d].vx; Y += dots[d].vy; }
     X /= (this.ids.size + 1); Y /= (this.ids.size + 1);
-    X = (3*X + this.vel.x) / 4;
-    Y = (3*Y + this.vel.y) / 4;
+    X = (3*X + this.vx) / 4;
+    Y = (3*Y + this.vy) / 4;
   }
 
-  this.pos.x += X; this.pos.y += Y;
+  this.x += X; this.y += Y;
   if (teleport) {
     ported = false;
-    if (this.pos.x >= window.innerWidth) {
-      this.pos.x = 1;
+    if (this.x >= window.innerWidth) {
+      this.x = 1;
       ported = true;
     }
-    else if (this.pos.x <= 0) {
-       this.pos.x = window.innerWidth;
+    else if (this.x <= 0) {
+       this.x = window.innerWidth;
        ported = true;
     }
-    if (this.pos.y >= window.innerHeight) {
-      this.pos.y = 1;
+    if (this.y >= window.innerHeight) {
+      this.y = 1;
       ported = true;
     }
-    else if (this.pos.y <= 1) {
-      this.pos.y = window.innerHeight;
+    else if (this.y <= 1) {
+      this.y = window.innerHeight;
       ported = true;
     }
     if (ported) {
-      var velocity = Math.sqrt(Math.pow(this.vel.x, 2) + Math.pow(this.vel.y, 2));
-      this.vel.x *= speed/velocity;
-      this.vel.y *= speed/velocity;
+      var velocity = Math.sqrt(Math.pow(this.vx, 2) + Math.pow(this.vy, 2));
+      this.vx *= speed/velocity;
+      this.vy *= speed/velocity;
     }
   }
   else {
-    if (this.pos.x <= 0) this.vel.x = Math.abs(this.vel.x);
-    if (this.pos.x >= window.innerWidth) { this.vel.x *= (this.vel.x < 0 ? 1 : -1); this.pos.x = window.innerWidth; }
-    if (this.pos.y <= 0) this.vel.y = Math.abs(this.vel.y);
-    if (this.pos.y >= window.innerHeight) { this.vel.y *= (this.vel.y < 0 ? 1 : -1); this.pos.y = window.innerHeight; }
+    if (this.x <= 0) this.vx = Math.abs(this.vx);
+    if (this.x >= window.innerWidth) { this.vx *= (this.vx < 0 ? 1 : -1); this.x = window.innerWidth; }
+    if (this.y <= 0) this.vy = Math.abs(this.vy);
+    if (this.y >= window.innerHeight) { this.vy *= (this.vy < 0 ? 1 : -1); this.y = window.innerHeight; }
   }
 };
 
 function render(c) {
   for (var j = 0; j < dots.length; j++) {
     if (lines > 0 && dots[j].ids.size >= lines) continue;
-    //if (gravity && Math.sqrt(Math.pow(mouse.x - dots[j].pos.x, 2) + Math.pow(mouse.y - dots[j].pos.y, 2)) <= maxDist*1.5) continue;
+    //if (gravity && Math.sqrt(Math.pow(mouse.x - dots[j].x, 2) + Math.pow(mouse.y - dots[j].y, 2)) <= maxDist*1.5) continue;
     for (var i = j+1; i < dots.length; i++) {
       if (dots[j].id==i || dots[i].ids.has(dots[j].id)) continue;
-      var distance = Math.sqrt(Math.pow(dots[j].pos.x - dots[i].pos.x, 2) + Math.pow(dots[j].pos.y - dots[i].pos.y, 2));
+      var distance = Math.sqrt(Math.pow(dots[j].x - dots[i].x, 2) + Math.pow(dots[j].y - dots[i].y, 2));
       if (distance > maxDist) continue;
       dots[j].ids.add(i);
-      dots[i].ids.add(dots[j].id);
+      dots[i].ids.add(j);
 
       if (mode != "t" && mode != "a" && mode != "oc") {
-        var grd = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, dots[i].pos.x, dots[i].pos.y),
-        s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + 1.1 * (1 - (distance / maxDist)) + ")",
-        s2 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + "," + 1.1 * (1 - (distance / maxDist)) + ")";
+        var grd = c.createLinearGradient(dots[j].x, dots[j].y, dots[i].x, dots[i].y),
+        s1 = "rgba(" + dots[j].r + "," + dots[j].g + "," + dots[j].b + "," + (1 - (distance / maxDist)) + ")",
+        s2 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + "," + (1 - (distance / maxDist)) + ")";
 
         grd.addColorStop(0, s1);
         grd.addColorStop(1, s2);
 
         if (mode.charAt(0) == "c") {
           c.beginPath();
-          c.arc((dots[j].pos.x + dots[i].pos.x)/2, (dots[j].pos.y + dots[i].pos.y)/2, distance/2, 0, 2 * Math.PI);
+          c.arc((dots[j].x + dots[i].x)/2, (dots[j].y + dots[i].y)/2, distance/2, 0, 2 * Math.PI);
           if (mode == "c") { c.fillStyle = grd; c.fill(); }
           else { c.strokeStyle = grd; c.stroke();}
         }
         else if (mode.charAt(0) == "q") {
-          var center = { x: (dots[j].pos.x + dots[i].pos.x)/2, y: (dots[j].pos.y + dots[i].pos.y)/2 };
+          var center = { x: (dots[j].x + dots[i].x)/2, y: (dots[j].y + dots[i].y)/2 };
           c.beginPath();
-          c.moveTo(dots[j].pos.x, dots[j].pos.y);
-          c.lineTo(-(dots[j].pos.y-center.y) + center.x, (dots[j].pos.x-center.x) + center.y);
-          c.lineTo(dots[i].pos.x, dots[i].pos.y);
-          c.lineTo((dots[j].pos.y-center.y) + center.x, -(dots[j].pos.x-center.x) + center.y);
+          c.moveTo(dots[j].x, dots[j].y);
+          c.lineTo(-(dots[j].y-center.y) + center.x, (dots[j].x-center.x) + center.y);
+          c.lineTo(dots[i].x, dots[i].y);
+          c.lineTo((dots[j].y-center.y) + center.x, -(dots[j].x-center.x) + center.y);
           if (mode == "q") { c.fillStyle = grd; c.fill(); }
-          else { c.lineTo(dots[j].pos.x, dots[j].pos.y); c.strokeStyle = grd; c.stroke();}
+          else { c.lineTo(dots[j].x, dots[j].y); c.strokeStyle = grd; c.stroke();}
         }
         else if (mode.charAt(0) == "s") {
           c.beginPath();
-          c.moveTo(dots[j].pos.x, dots[j].pos.y);
-          c.lineTo(dots[i].pos.x, dots[j].pos.y);
-          c.lineTo(dots[i].pos.x, dots[i].pos.y);
-          c.lineTo(dots[j].pos.x, dots[i].pos.y);
+          c.moveTo(dots[j].x, dots[j].y);
+          c.lineTo(dots[i].x, dots[j].y);
+          c.lineTo(dots[i].x, dots[i].y);
+          c.lineTo(dots[j].x, dots[i].y);
           if (mode == "s") { c.fillStyle = grd; c.fill(); }
-          else { c.lineTo(dots[j].pos.x, dots[j].pos.y); c.strokeStyle = grd; c.stroke();}
+          else { c.lineTo(dots[j].x, dots[j].y); c.strokeStyle = grd; c.stroke();}
         }
         else {
           c.beginPath();
-          c.moveTo(dots[j].pos.x, dots[j].pos.y);
-          c.lineTo(dots[i].pos.x, dots[i].pos.y);
+          c.moveTo(dots[j].x, dots[j].y);
+          c.lineTo(dots[i].x, dots[i].y);
           c.strokeStyle = grd;
           c.stroke();
         }
@@ -399,32 +404,32 @@ function render(c) {
       else {
         for (var z=i+1; z<dots.length; z++) {
           if (lines > 0 && dots[z].ids.size > lines) continue;
-          if (Math.sqrt(Math.pow(dots[z].pos.x - dots[i].pos.x, 2) + Math.pow(dots[z].pos.y - dots[i].pos.y, 2)) > maxDist || Math.sqrt(Math.pow(dots[z].pos.x - dots[j].pos.x, 2) + Math.pow(dots[z].pos.y - dots[j].pos.y, 2)) > maxDist) continue;
+          if (Math.sqrt(Math.pow(dots[z].x - dots[i].x, 2) + Math.pow(dots[z].y - dots[i].y, 2)) > maxDist || Math.sqrt(Math.pow(dots[z].x - dots[j].x, 2) + Math.pow(dots[z].y - dots[j].y, 2)) > maxDist) continue;
 
-          var center = { x: (dots[j].pos.x + dots[i].pos.x + dots[z].pos.x) / 3, y: (dots[j].pos.y + dots[i].pos.y + dots[z].pos.y) / 3, A:this.x, B:0, C:0 };
+          var center = { x: (dots[j].x + dots[i].x + dots[z].x) / 3, y: (dots[j].y + dots[i].y + dots[z].y) / 3, A:this.x, B:0, C:0 };
 
-          center.A = Math.sqrt(Math.pow(dots[j].pos.x - center.x, 2) + Math.pow(dots[j].pos.y - center.y, 2));
+          center.A = Math.sqrt(Math.pow(dots[j].x - center.x, 2) + Math.pow(dots[j].y - center.y, 2));
           if (center.A > maxRadius) continue;
-          center.B = Math.sqrt(Math.pow(dots[i].pos.x - center.x, 2) + Math.pow(dots[i].pos.y - center.y, 2));
+          center.B = Math.sqrt(Math.pow(dots[i].x - center.x, 2) + Math.pow(dots[i].y - center.y, 2));
           if (center.B > maxRadius) continue;
-          center.C = Math.sqrt(Math.pow(dots[z].pos.x - center.x, 2) + Math.pow(dots[z].pos.y - center.y, 2));
+          center.C = Math.sqrt(Math.pow(dots[z].x - center.x, 2) + Math.pow(dots[z].y - center.y, 2));
           if (center.C > maxRadius) continue;
 
-          var AB = { x: (dots[j].pos.x + dots[i].pos.x) / 2, y: (dots[j].pos.y + dots[i].pos.y) / 2 },
-          BC = { x: (dots[i].pos.x + dots[z].pos.x) / 2, y: (dots[i].pos.y + dots[z].pos.y) / 2 },
-          CA = { x: (dots[z].pos.x + dots[j].pos.x) / 2, y: (dots[z].pos.y + dots[j].pos.y) / 2 },
+          var AB = { x: (dots[j].x + dots[i].x) / 2, y: (dots[j].y + dots[i].y) / 2 },
+          BC = { x: (dots[i].x + dots[z].x) / 2, y: (dots[i].y + dots[z].y) / 2 },
+          CA = { x: (dots[z].x + dots[j].x) / 2, y: (dots[z].y + dots[j].y) / 2 },
 
-          gA = c.createLinearGradient(dots[j].pos.x, dots[j].pos.y, BC.x, BC.y),
-          gB = c.createLinearGradient(dots[i].pos.x, dots[i].pos.y, CA.x, CA.y),
-          gC = c.createLinearGradient(dots[z].pos.x, dots[z].pos.y, AB.x, AB.y),
+          gA = c.createLinearGradient(dots[j].x, dots[j].y, BC.x, BC.y),
+          gB = c.createLinearGradient(dots[i].x, dots[i].y, CA.x, CA.y),
+          gC = c.createLinearGradient(dots[z].x, dots[z].y, AB.x, AB.y),
 
-          alphaA = 1-(center.A/maxRadius),
-          alphaB = 1-(center.B/maxRadius),
-          alphaC = 1-(center.C/maxRadius);
+          alphaA = 1-Math.pow(center.A/maxRadius, 2),
+          alphaB = 1-Math.pow(center.B/maxRadius, 2),
+          alphaC = 1-Math.pow(center.C/maxRadius, 2);
 
-          if (alphaA > 0.5) alphaA *= (alphaA-0.5)+1;
-          if (alphaB > 0.5) alphaB *= (alphaB-0.5)+1;
-          if (alphaC > 0.5) alphaC *= (alphaC-0.5)+1;
+          // if (alphaA > 0.5) alphaA *= (alphaA-0.5)+1;
+          // if (alphaB > 0.5) alphaB *= (alphaB-0.5)+1;
+          // if (alphaC > 0.5) alphaC *= (alphaC-0.5)+1;
 
           var min = Math.min(alphaA, alphaB, alphaC);
           // if (alphaA != min) alphaA *= min;
@@ -449,25 +454,25 @@ function render(c) {
           gC.addColorStop(1, cC0);
 
           c.beginPath();
-          c.moveTo(dots[j].pos.x, dots[j].pos.y);
+          c.moveTo(dots[j].x, dots[j].y);
 
           if (mode == "t") {
-            c.lineTo(dots[i].pos.x, dots[i].pos.y);
-            c.lineTo(dots[z].pos.x, dots[z].pos.y);
+            c.lineTo(dots[i].x, dots[i].y);
+            c.lineTo(dots[z].x, dots[z].y);
           }
           else if (mode == "oc") {
-            var DD = 2*(dots[j].pos.x*(dots[i].pos.y-dots[z].pos.y)+dots[i].pos.x*(dots[z].pos.y-dots[j].pos.y)+dots[z].pos.x*(dots[j].pos.y-dots[i].pos.y)),
-            circumcenter = { x: ((Math.pow(dots[j].pos.x, 2)+Math.pow(dots[j].pos.y, 2))*(dots[i].pos.y-dots[z].pos.y) + (Math.pow(dots[i].pos.x, 2)+Math.pow(dots[i].pos.y, 2))*(dots[z].pos.y-dots[j].pos.y) + (Math.pow(dots[z].pos.x, 2)+Math.pow(dots[z].pos.y, 2))*(dots[j].pos.y-dots[i].pos.y))/DD,
-               y: ((Math.pow(dots[j].pos.x, 2)+Math.pow(dots[j].pos.y, 2))*(dots[z].pos.x-dots[i].pos.x) + (Math.pow(dots[i].pos.x, 2)+Math.pow(dots[i].pos.y, 2))*(dots[j].pos.x-dots[z].pos.x) + (Math.pow(dots[z].pos.x, 2)+Math.pow(dots[z].pos.y, 2))*(dots[i].pos.x-dots[j].pos.x))/DD,
+            var DD = 2*(dots[j].x*(dots[i].y-dots[z].y)+dots[i].x*(dots[z].y-dots[j].y)+dots[z].x*(dots[j].y-dots[i].y)),
+            circumcenter = { x: ((Math.pow(dots[j].x, 2)+Math.pow(dots[j].y, 2))*(dots[i].y-dots[z].y) + (Math.pow(dots[i].x, 2)+Math.pow(dots[i].y, 2))*(dots[z].y-dots[j].y) + (Math.pow(dots[z].x, 2)+Math.pow(dots[z].y, 2))*(dots[j].y-dots[i].y))/DD,
+               y: ((Math.pow(dots[j].x, 2)+Math.pow(dots[j].y, 2))*(dots[z].x-dots[i].x) + (Math.pow(dots[i].x, 2)+Math.pow(dots[i].y, 2))*(dots[j].x-dots[z].x) + (Math.pow(dots[z].x, 2)+Math.pow(dots[z].y, 2))*(dots[i].x-dots[j].x))/DD,
                radius: 0 };
-            circumcenter.radius = Math.sqrt(Math.pow(circumcenter.x-dots[j].pos.x, 2) + Math.pow(circumcenter.y-dots[j].pos.y, 2));
+            circumcenter.radius = Math.sqrt(Math.pow(circumcenter.x-dots[j].x, 2) + Math.pow(circumcenter.y-dots[j].y, 2));
             if (circumcenter.radius > maxDist) continue;
             c.arc(circumcenter.x, circumcenter.y, circumcenter.radius, 0, 2 * Math.PI);
           }
           else {
-            c.quadraticCurveTo(center.x, center.y, dots[i].pos.x, dots[i].pos.y);
-            c.quadraticCurveTo(center.x, center.y, dots[z].pos.x, dots[z].pos.y);
-            c.quadraticCurveTo(center.x, center.y, dots[j].pos.x, dots[j].pos.y);
+            c.quadraticCurveTo(center.x, center.y, dots[i].x, dots[i].y);
+            c.quadraticCurveTo(center.x, center.y, dots[z].x, dots[z].y);
+            c.quadraticCurveTo(center.x, center.y, dots[j].x, dots[j].y);
           }
 
           c.fillStyle = gA; c.fill(); c.fillStyle = gB; c.fill(); c.fillStyle = gC; c.fill();
@@ -476,3 +481,244 @@ function render(c) {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+function vrender(c) {
+  c.strokeStyle = bg ? "black" : "white";
+  for (let d of dots) insert (d);
+  edges.forEach(function(an_edge){
+    var org = an_edge.org();
+    var right = an_edge.right();
+    var dest = an_edge.dest();
+    var left = an_edge.left();
+    if(!org.is_infinity && right!=null && left!=null) { draw_triangle(org, right, left); }
+    if(!dest.is_infinity && right!=null && left!=null) { draw_triangle(dest, left, right); }
+    if (mode == 'd') if(!an_edge.is_infinite_edge()) draw_line(org, dest, 2);
+    if (mode == 'v') if(!an_edge.is_infinite_edge()) draw_line(right, left, 2);
+    //if (right) draw_line(right, left, 2);
+  });
+}
+
+function draw_line(fro, to) {
+  context.beginPath();
+  context.moveTo(fro.x, fro.y);
+  context.lineTo(to.x, to.y);
+  context.closePath();
+  context.stroke();
+}
+
+function draw_triangle(v0, v1, v2) {
+  var midx = (v1.x+v2.x)/2, midy = (v1.y+v2.y)/2;
+  if (midx < 0) midx = 0;
+  if (midx > canvas.width) midx = canvas.width;
+  if (midy < 0) midy = 0;
+  if (midy > canvas.height) midy = canvas.height;
+  var grd = context.createLinearGradient(v0.x, v0.y, midx, midy),
+  s1 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",1)";
+  s2 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",0)";
+
+  grd.addColorStop(0, s1);
+  grd.addColorStop(1, s2);
+
+  //var grd = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",1)";
+
+  context.fillStyle = grd;
+  context.beginPath();
+  context.moveTo(v0.x, v0.y);
+  context.lineTo(v1.x, v1.y);
+  context.lineTo(v2.x, v2.y);
+  context.lineTo(v0.x, v0.y);
+  context.closePath();
+  context.fill();
+
+}
+
+Dot.prototype.equals = function(v) { return this.x == v.x && this.y == v.y; }
+
+function in_circle(v0, v1, v2, v3) {
+  var circle_test = (v2.x - v1.x) * (v3.y - v1.y) * (v0.x*v0.x + v0.y*v0.y - v1.x*v1.x - v1.y*v1.y)
+  + (v3.x - v1.x) * (v0.y - v1.y) * (v2.x*v2.x + v2.y*v2.y - v1.x*v1.x - v1.y*v1.y)
+  + (v0.x - v1.x) * (v2.y - v1.y) * (v3.x*v3.x + v3.y*v3.y - v1.x*v1.x - v1.y*v1.y)
+  - (v2.x - v1.x) * (v0.y - v1.y) * (v3.x*v3.x + v3.y*v3.y - v1.x*v1.x - v1.y*v1.y)
+  - (v3.x - v1.x) * (v2.y - v1.y) * (v0.x*v0.x + v0.y*v0.y - v1.x*v1.x - v1.y*v1.y)
+  - (v0.x - v1.x) * (v3.y - v1.y) * (v2.x*v2.x + v2.y*v2.y - v1.x*v1.x - v1.y*v1.y);
+  return circle_test >= 0.0;
+}
+
+function area(v0, v1, v2) { return (v1.x - v0.x)*(v2.y - v0.y) - (v2.x - v0.x)*(v1.y - v0.y); }
+function is_right_of(v0, v1, v2) { return area(v0, v1, v2) > 0.0; }
+
+var edge = null;
+var edges = [];
+var circumcenters = [];
+var infinite_vertices=[new Dot(-1), new Dot(-1), new Dot(-1)];
+infinite_vertices[0].x = 0.0, infinite_vertices[0].y = -5000.0;
+infinite_vertices[1].x = -10000.0, infinite_vertices[1].y = 5000.0;
+infinite_vertices[2].x = 10000.0, infinite_vertices[2].y = 5000.0;
+function init_delaunay(){
+  edges.forEach(function(qe){ delete_quadedge(qe); });
+  edges.length=0;
+  circumcenters.forEach(function(cc){ delete cc; });
+  circumcenters.length=0;
+  infinite_vertices.forEach(function(vertex){ vertex.is_infinity = true; });
+  edges[0] = make_quadedge();
+  edges[2] = make_quadedge();
+  edges[0].set_org_dest(infinite_vertices[1], infinite_vertices[2]);
+  edges[2].set_org_dest(infinite_vertices[1], infinite_vertices[0]);
+  edges[0].splice(edges[2]);
+  edges[2] = edges[2].sym();
+  edges[1] = connect(edges[0], edges[2]);
+  edge = edges[0];
+}
+
+function disconnect_edge(e) {
+  e.splice(e.oprev());
+  e.sym().splice(e.sym().oprev());
+}
+
+function circumcenter(v0, v1, v2) {
+  var denominator = (v1.y - v2.y)*(v1.x - v0.x) - (v1.y - v0.y)*(v1.x - v2.x);
+  var num0 = ((v0.x + v1.x)*(v1.x - v0.x))/2.0 + ((v1.y - v0.y)*(v0.y + v1.y))/2.0;
+  var num1 = ((v1.x + v2.x)*(v1.x - v2.x))/2.0 + ((v1.y - v2.y)*(v1.y + v2.y))/2.0;
+  var x = (num0*(v1.y - v2.y) - num1*(v1.y - v0.y))/denominator;
+  var y = (num1*(v1.x - v0.x) - num0*(v1.x - v2.x))/denominator;
+  var c = new Dot(-1);
+  c.x = x, c.y = y;
+  circumcenters.push(c);
+  return c;
+}
+
+function set_circumcenter(e, cc) {
+  var cc = circumcenter(e.dest(), e.org(), e.onext().dest());
+  circumcenters.push(cc);
+  e.set_left(cc);
+  e.lnext().set_left(cc);
+  e.lprev().set_left(cc);
+}
+
+function delete_quadedge(q) { disconnect_edge(q); [q, q.rot, q.sym(), q.irot()].forEach( function(qq){ delete qq; }); }
+
+function insert(vertex) {
+  //if(!is_inside_cosmic_triangle(vertex)){ return; }
+  try{
+    locate(vertex);
+  }
+  catch(exception) {
+    if(exception=="LocateException") { return; }
+    alert(exception);
+  }
+  // if(edge.vertex_colinear(vertex)) {
+  //   var tmp = edge.oprev();
+  //   disconnect_edge(edge);
+  //   delete_quadedge(edge);
+  //   edge = tmp;
+  // }
+  var e2 = make_quadedge();
+  edges.push(e2);
+  var v1 = edge.org();
+  e2.set_org_dest(v1, vertex);
+  e2.splice(edge);
+  do {
+    var e2 = connect(edge, e2.sym());
+    edges.push(e2);
+    edge = e2.oprev();
+  } while(edge.dest() != v1);
+  while( true ) {
+    var e3 = edge.oprev();
+    if(edge.vertex_right_of(e3.dest()) && in_circle(vertex, edge.org(), e3.dest(), edge.dest())) {
+      edge.swap();
+      set_circumcenter(edge);
+      edge = edge.oprev();
+    }
+    else {
+      if(edge.org() == v1) {
+          set_circumcenter(edge);
+          return;
+      }
+      set_circumcenter(edge);
+      edge = edge.onext().lprev();
+    }
+  }
+}
+
+
+function make_quadedge() {
+  var rot_map = [1,2,3,0];
+  var next_map = [0,3,2,1];
+  var e =[new Edge(),new Edge(),new Edge(),new Edge()];
+  for(var ie=0; ie<4; ie++){
+    e[ie].rot=e[rot_map[ie]];
+    e[ie].next=e[next_map[ie]];
+  }
+  return e[0];
+}
+
+function locate(v) {
+  var search_iterations = 0;
+  if(edge.vertex_right_of(v)){ edge = edge.sym(); }
+  while( true ) {
+    if(search_iterations++ > 1000 || v.equals(edge.org()) || v.equals(edge.dest())){ throw "LocateException"; }
+    if(!edge.onext().vertex_right_of(v)) { edge = edge.onext(); continue; }
+    if(!edge.dprev().vertex_right_of(v)) { edge = edge.dprev(); continue; }
+    return edge;
+  }
+}
+
+function connect(e0, e1) {
+  var e2 = make_quadedge();
+  e2.set_org_dest(e0.dest(), e1.org());
+  e2.splice(e0.lnext());
+  e2.sym().splice(e1);
+  return e2;
+}
+
+function Edge() {
+  this.data=null;
+  this.next=null;
+  this.rot=null;
+}
+Edge.prototype.splice = function(e) {
+  var e_1 = this.next.rot;
+  var e_2 = e.next.rot;
+  var e_3 = this.next;
+  this.next = e.next;
+  e.next = e_3;
+  var e_3 = e_1.next;
+  e_1.next = e_2.next;
+  e_2.next = e_3;
+}
+Edge.prototype.swap = function() {
+  var e_0 = this.oprev();
+  var e_1 = this.sym().oprev();
+  this.splice(e_0);
+  this.sym().splice(e_1);
+  this.splice(e_0.lnext());
+  this.sym().splice(e_1.lnext());
+  this.set_org(e_0.dest());
+  this.set_dest(e_1.dest());
+}
+Edge.prototype.sym = function() { return this.rot.rot; }
+Edge.prototype.irot = function() { return this.rot.rot.rot; }
+Edge.prototype.org = function() { return this.data; }
+Edge.prototype.set_org = function(v) { this.data = v; }
+Edge.prototype.right = function() { return this.rot.data; }
+Edge.prototype.dest = function() { return this.rot.rot.data; }
+Edge.prototype.set_dest = function(v) { this.rot.rot.data = v; }
+Edge.prototype.left = function() { return this.rot.rot.rot.data; }
+Edge.prototype.set_left = function(v) { this.rot.rot.rot.data = v; }
+Edge.prototype.set_org_dest = function(o, d) { this.set_org(o); this.set_dest(d); }
+Edge.prototype.onext = function() { return this.next; }
+Edge.prototype.lnext = function() { return this.rot.rot.rot.next.rot; }
+Edge.prototype.oprev = function() { return this.rot.next.rot; }
+Edge.prototype.dprev = function() { return this.rot.rot.rot.next.rot.rot.rot; }
+Edge.prototype.lprev = function() { return this.next.rot.rot; }
+Edge.prototype.is_infinite_edge = function() { return this.org().is_infinity || this.dest().is_infinity; }
+Edge.prototype.vertex_right_of = function(v) { return is_right_of(v, this.org(), this.dest()); }
