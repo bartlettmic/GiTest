@@ -138,7 +138,7 @@ function checkboxUpdate(e) {
   }
 
   let UIs = [document.getElementById("bottom"), document.getElementsByTagName("ASIDE")[0], document.getElementById("aboutdiv"), document.getElementById("screen") ];
-  for (let ui of UIs) ui.style.background = trail ? (bg ? "white" : "black") : "transparent";
+  for (let ui of UIs) ui.style.background = mode == 'v' || trail ? (bg ? "white" : "black") : "transparent";    
 }
 
 function dropdownUpdate(e) {
@@ -153,6 +153,8 @@ function dropdownUpdate(e) {
       //context.globalCompositeOperation = "source-over";
       document.getElementById("thick").disabled = false;
     }
+    let UIs = [document.getElementById("bottom"), document.getElementsByTagName("ASIDE")[0], document.getElementById("aboutdiv"), document.getElementById("screen") ];
+    for (let ui of UIs) ui.style.background = mode == 'v' || trail ? (bg ? "white" : "black") : "transparent";
 }
 
 function renderScreenshot() {
