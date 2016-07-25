@@ -195,7 +195,7 @@ function showLabel(e) {
     default:
     nfo.E.innerHTML = e.id+" = "+e.value;
   }
-  if (e.tagName == "SELECT") nfo.E.innerHTML = "<u>changelog:</u>\nVoronoi & Delunay added"
+  if (e.tagName == "SELECT") nfo.E.innerHTML = "<u><b>What's new:</b></u><br><br>Voronoi & Deluanay visuals added<br> "
   nfo.E.style.maxWidth = String(rect.width)+"px";
   nfo.E.style.minWidth = String(rect.width)+"px";
   nfo.E.style.left = String(rect.left)+'px';
@@ -501,8 +501,10 @@ function vrender(c) {
     var right = an_edge.right();
     var dest = an_edge.dest();
     var left = an_edge.left();
+    c.globalCompositeOperation = "lighter";
     if(!org.is_infinity && right!=null && left!=null) { draw_triangle(org, right, left); }
     if(!dest.is_infinity && right!=null && left!=null) { draw_triangle(dest, left, right); }
+    c.globalCompositeOperation = "source-over";
     if (mode == 'd') if(!an_edge.is_infinite_edge()) draw_line(org, dest, 2);
     if (mode == 'v') if(!an_edge.is_infinite_edge()) draw_line(right, left, 2);
     //if (right) draw_line(right, left, 2);
@@ -518,17 +520,17 @@ function draw_line(fro, to) {
 }
 
 function draw_triangle(v0, v1, v2) {
-  var midx = (v1.x+v2.x)/2, midy = (v1.y+v2.y)/2;
-  if (midx < 0) midx = 0;
-  if (midx > canvas.width) midx = canvas.width;
-  if (midy < 0) midy = 0;
-  if (midy > canvas.height) midy = canvas.height;
+  var midx = (Math.min(Math.max(v1.x,0),canvas.width)+Math.min(Math.max(v2.x,0),canvas.width))/2, midy = (Math.min(Math.max(v1.y,0),canvas.height)+Math.min(Math.max(v2.y,0),canvas.height))/2;
+  // if (midx < 0) midx = 0;
+  // if (midx > canvas.width) midx = canvas.width;
+  // if (midy < 0) midy = 0;
+  // if (midy > canvas.height) midy = canvas.height;
   var grd = context.createLinearGradient(v0.x, v0.y, midx, midy),
   s1 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",1)";
-  s2 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",0)";
+  s2 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",0.5)";
 
-  grd.addColorStop(0, s1);
-  grd.addColorStop(1, s2);
+  grd.addColorStop(1, s1);
+  grd.addColorStop(0, s2);
 
   //var grd = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",1)";
 
