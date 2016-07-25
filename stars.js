@@ -138,7 +138,7 @@ function checkboxUpdate(e) {
   }
 
   let UIs = [document.getElementById("bottom"), document.getElementsByTagName("ASIDE")[0], document.getElementById("aboutdiv"), document.getElementById("screen") ];
-  for (let ui of UIs) ui.style.background = mode == 'v' || trail ? (bg ? "white" : "black") : "transparent";    
+  for (let ui of UIs) ui.style.background = "vf".indexOf(mode) > -1 || trail ? (bg ? "white" : "black") : "transparent";
 }
 
 function dropdownUpdate(e) {
@@ -154,7 +154,7 @@ function dropdownUpdate(e) {
       document.getElementById("thick").disabled = false;
     }
     let UIs = [document.getElementById("bottom"), document.getElementsByTagName("ASIDE")[0], document.getElementById("aboutdiv"), document.getElementById("screen") ];
-    for (let ui of UIs) ui.style.background = mode == 'v' || trail ? (bg ? "white" : "black") : "transparent";
+    for (let ui of UIs) ui.style.background = "vf".indexOf(mode) > -1 || trail ? (bg ? "white" : "black") : "transparent";
 }
 
 function renderScreenshot() {
@@ -197,7 +197,7 @@ function showLabel(e) {
     default:
     nfo.E.innerHTML = e.id+" = "+e.value;
   }
-  if (e.tagName == "SELECT") nfo.E.innerHTML = "<u><b>What's new:</b></u><br><br>Voronoi & Deluanay visuals added<br> "
+  if (e.tagName == "SELECT") nfo.E.innerHTML = "<u><b>What's new:</b></u><br><br>Voronoi and Feverdream visuals added<br><br>Deluanay proof of concept<br> "
   nfo.E.style.maxWidth = String(rect.width)+"px";
   nfo.E.style.minWidth = String(rect.width)+"px";
   nfo.E.style.left = String(rect.left)+'px';
@@ -209,7 +209,7 @@ function showLabel(e) {
   function fadeLabel() {
     var date = new Date();
     if (nfo.e.tagName == "SELECT")  {
-      if (date - nfo.time >= 5000) {
+      if (date - nfo.time >= 10000) {
         nfo.E.innerHTML = "";
         nfo.time = 0;
         clearInterval(id);
@@ -275,6 +275,7 @@ function loop() {
   for (var i = 0; i < dots.length; i++) dots[i].update();
   for (var i = 0; i < dots.length; i++) dots[i].ids.clear();
   if (mode == 'v' || mode == 'd') { init_delaunay(); vrender(context); }
+  else if (mode == 'f') frender(context);
   else if (mode != "0") render(context);
 
   if (points) for (var j = 0; j < dots.length; j++) {
@@ -493,7 +494,30 @@ function render(c) {
   }
 }
 
+function frender(c) {
+  var avgx =0, avgy = 0;
+  for (var i=0; i<dots.length; i++) {
+    avgx += dots[i].x;
+    avgy += dots[i].y;
+  }
+  avgx /= dots.length;
+  avgy /= dots.length;
+  // var avgx = canvas.width/2,
+  //     avgy = canvas.height/2;
+  c.globalCompositeOperation = 'destination-over';
+  for (var i=0; i<dots.length; i++) {
+    var grd = c.createLinearGradient(dots[i].x, dots[i].y, avgx, avgy),
+    s1 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + ",0.5)";
+    s2 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + ",0.05)";
 
+    grd.addColorStop(0, s1);
+    grd.addColorStop(1, s2);
+
+    c.fillStyle = grd;
+    c.fillRect(0,0,canvas.width,canvas.height);
+  }
+  c.globalCompositeOperation = 'source-over';
+}
 
 function vrender(c) {
   c.strokeStyle = bg ? "black" : "white";
