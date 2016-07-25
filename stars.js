@@ -3,7 +3,7 @@
     ▶ p"x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
     ▶ p"y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
 
-• Voronoi, Deluanay, Polygon, Circumcircles
+• Deluanay, Polygon, Circumcircles
 • Configuration export and import?
 • Add text input toggleable over sliders
 • Click for explode
@@ -17,7 +17,6 @@
 
 ⚠ Fix on iOS -> debug with fiddle I guess
 */
-
 
 //Graphics and structural globals
 mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -39,7 +38,7 @@ G = 2.5;
 nfo = { E: null,  time: 0,  e: null };
 
 //checkbox bool globals
-teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="v";
+teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="l";
 
 //fps diagnostic globals
 frames = 0; fps = 0; lastSecond = new Date();
@@ -68,6 +67,7 @@ function init() {
 
   for (var i = 0; i < stars; i++) dots.push(new Dot(i));
   setInterval(loop, 1000 / 60);
+  showLabel(document.getElementsByTagName("SELECT")[0]);
 }
 
 //update mouse position
@@ -172,7 +172,6 @@ function renderScreenshot() {
 }
 
 function showLabel(e) {
-  //var nfo = document.getElementById("nfo");
   var rect = e.getBoundingClientRect();
   switch (e.id) {
     case "stars":
@@ -196,6 +195,7 @@ function showLabel(e) {
     default:
     nfo.E.innerHTML = e.id+" = "+e.value;
   }
+  if (e.tagName == "SELECT") nfo.E.innerHTML = "<u>changelog:</u>\nVoronoi & Delunay added"
   nfo.E.style.maxWidth = String(rect.width)+"px";
   nfo.E.style.minWidth = String(rect.width)+"px";
   nfo.E.style.left = String(rect.left)+'px';
@@ -206,12 +206,21 @@ function showLabel(e) {
   var id = setInterval(fadeLabel, 5);
   function fadeLabel() {
     var date = new Date();
-    if (date - nfo.time >= 1500) {
-      nfo.E.innerHTML = "";
-      nfo.time = 0;
-      clearInterval(id);
-    } else {
-      nfo.E.style.opacity = 1 - (date - nfo.time - 500)/1000;
+    if (nfo.e.tagName == "SELECT")  {
+      if (date - nfo.time >= 5000) {
+        nfo.E.innerHTML = "";
+        nfo.time = 0;
+        clearInterval(id);
+      }
+    }
+    else{
+      if (date - nfo.time >= 1500) {
+        nfo.E.innerHTML = "";
+        nfo.time = 0;
+        clearInterval(id);
+      } else {
+        nfo.E.style.opacity = 1 - (date - nfo.time - 500)/1000;
+      }
     }
   }
 }
@@ -481,13 +490,6 @@ function render(c) {
     }
   }
 }
-
-
-
-
-
-
-
 
 
 
