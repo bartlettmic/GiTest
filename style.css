@@ -1,10 +1,11 @@
 body {
   margin: 0;
   background: black;
-  overflow:hidden
+  font-size: 1.25em !important;
+  overflow:hidden;
 }
 
-main {  height: 100vh; width: 100vw; }
+main {  height: 100vh; width: 100vw;  }
 
 aside { display: flex; position: absolute; left: 0; right: 0; }
 
@@ -34,9 +35,9 @@ input[type=checkbox] { display: none; }
 #opaque + label::before { content:"transparent"; }
 #opaque:checked + label::before { content:"opaque"; }
 
-#canvas { width: 100%; height: 100%; background: 100%; z-index: 99}
+#canv { width: 100%; height: 100%; background: 100%; z-index: 99; overflow:hidden;}
 
-#bottom { position: relative;  bottom: 0; left: -50%; height: 21px; display: inline-flex; white-space: nowrap;}
+#bottom { position: relative;  bottom: 0; left: -50%; height: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
 
 #screenshot {  font-family:monospace; color:white; text-decoration:none;  margin-right:0.25em; }
 
@@ -53,15 +54,16 @@ input[type=checkbox] { display: none; }
   position: absolute;
   right: 0;
   bottom: 0;
-  height: 21px;
-   line-height: 21px;
+  height: auto;
+  border-radius: 4px;
 }
 
 #screen {
   display: inline;
   position: absolute;
   left: 0; bottom: 0;
-  height: 21px;
+  height: auto;
+  border-radius: 4px;
 }
 
 #nfo {

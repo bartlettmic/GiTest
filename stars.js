@@ -504,11 +504,14 @@ function frender(c) {
   avgy /= dots.length;
   // var avgx = canvas.width/2,
   //     avgy = canvas.height/2;
+  //c.globalCompositeOperation = 'luminosity';
   c.globalCompositeOperation = 'destination-over';
   for (var i=0; i<dots.length; i++) {
-    var grd = c.createLinearGradient(dots[i].x, dots[i].y, avgx, avgy),
+    var grd = c.createLinearGradient(dots[i].x, dots[i].y, avgx, avgy);
+    var distance = Math.sqrt(Math.pow(dots[i].x-avgx, 2) + Math.pow(dots[i].y-avgy, 2));
+    //var grd = c.createRadialGradient(dots[i].x, dots[i].y, distance/2, dots[i].x, dots[i].y, distance);
     s1 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + ",0.5)";
-    s2 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + ",0.05)";
+    s2 = "rgba(" + dots[i].r + "," + dots[i].g + "," + dots[i].b + ",0.1)";
 
     grd.addColorStop(0, s1);
     grd.addColorStop(1, s2);
@@ -520,7 +523,7 @@ function frender(c) {
 }
 
 function vrender(c) {
-  c.strokeStyle = bg ? "black" : "white";
+  // c.strokeStyle = bg ? "black" : "white";
   for (let d of dots) insert (d);
   edges.forEach(function(an_edge){
     var org = an_edge.org();
@@ -532,7 +535,7 @@ function vrender(c) {
     if(!dest.is_infinity && right!=null && left!=null) { draw_triangle(dest, left, right); }
     c.globalCompositeOperation = "source-over";
     if (mode == 'd') if(!an_edge.is_infinite_edge()) draw_line(org, dest, 2);
-    if (mode == 'v') if(!an_edge.is_infinite_edge()) draw_line(right, left, 2);
+    //if (mode == 'v') if(!an_edge.is_infinite_edge()) draw_line(right, left, 2);
     //if (right) draw_line(right, left, 2);
   });
 }
@@ -545,13 +548,17 @@ function draw_line(fro, to) {
   context.stroke();
 }
 
+function constrain(min, num, max) {
+  if (num < min) return min;
+  if (num > max) return max;
+  return num;
+}
+
 function draw_triangle(v0, v1, v2) {
-  var midx = (Math.min(Math.max(v1.x,0),canvas.width)+Math.min(Math.max(v2.x,0),canvas.width))/2, midy = (Math.min(Math.max(v1.y,0),canvas.height)+Math.min(Math.max(v2.y,0),canvas.height))/2;
-  // if (midx < 0) midx = 0;
-  // if (midx > canvas.width) midx = canvas.width;
-  // if (midy < 0) midy = 0;
-  // if (midy > canvas.height) midy = canvas.height;
-  var grd = context.createLinearGradient(v0.x, v0.y, midx, midy),
+  //var midx = (constrain(0, v1.x, canvas.width) + constrain(0, v2.x, canvas.width))/2, midy = (constrain(0, v1.y, canvas.height) + constrain(0, v2.y, canvas.height))/2;
+  //var midx = constrain(0, (v1.x + v2.x)/2, canvas.width), midy = constrain(0, (v1.y + v2.y)/2, canvas.height);
+  var midx = (v1.x + v2.x)/2, midy = (v1.y + v2.y)/2;
+  var grd = context.createLinearGradient(v0.x, v0.y, constrain(0, midx, canvas.width), constrain(0, midy, canvas.height)),
   s1 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",1)";
   s2 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",0.5)";
 
@@ -568,6 +575,8 @@ function draw_triangle(v0, v1, v2) {
   context.lineTo(v0.x, v0.y);
   context.closePath();
   context.fill();
+  //context.beginPath();
+  //context.arc()
 
 }
 
