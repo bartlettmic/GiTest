@@ -43,6 +43,8 @@ teleport = false; gravity = false; tether = false; bg = false; opaque = true; po
 //fps diagnostic globals
 frames = 0; fps = 0; lastSecond = new Date();
 
+window.onscroll = function () { window.scrollTo(0, 0); };
+
 //Initialize
 function init() {
   context = canvas.getContext("2d");
