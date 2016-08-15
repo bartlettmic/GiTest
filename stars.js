@@ -51,6 +51,7 @@ function init() {
   context.lineWidth = thick;
   maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
   maxRadius = maxDist * Math.sqrt(3) / 3;
+  document.getElementsByTagName("BODY")[0].style.fontSize = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? "0.25em !important" : "1em !important";
   nfo.E = document.getElementById("nfo");
 
   for (let e of document.getElementsByTagName("INPUT")) {
