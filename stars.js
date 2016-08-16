@@ -38,12 +38,10 @@ G = 2.5;
 nfo = { E: null,  time: 0,  e: null };
 
 //checkbox bool globals
-teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=false; trail=0; rainbow=true; mode="l";
+teleport = false; gravity = false; tether = false; bg = false; opaque = true; points=true; trail=0; rainbow=true; mode="l";
 
 //fps diagnostic globals
 frames = 0; fps = 0; lastSecond = new Date();
-
-window.onscroll = function () { window.scrollTo(0, 0); };
 
 //Initialize
 function init() {
@@ -310,7 +308,8 @@ function Dot(ID) {
   //if ((this.r+this.g+this.b)/3 < 50) this.r=0, this.g=0, this.b = 0;
   //if ((this.r+this.g+this.b)/3 > 200) this.r=255, this.g=255, this.b = 255;
   this.is_infinity = false;
-  this.payload = {"velocity":0, "painted":false};
+  //this.payload = {"velocity":0, "painted":false};
+  this.painted = false;
 }
 
 //Dot update
@@ -533,13 +532,27 @@ function vrender(c) {
     var right = an_edge.right();
     var dest = an_edge.dest();
     var left = an_edge.left();
-    c.globalCompositeOperation = "lighter";
-    if(!org.is_infinity && right!=null && left!=null) { draw_triangle(org, right, left); }
-    if(!dest.is_infinity && right!=null && left!=null) { draw_triangle(dest, left, right); }
-    c.globalCompositeOperation = "source-over";
-    if (mode == 'd') if(!an_edge.is_infinite_edge()) draw_line(org, dest, 2);
-    //if (mode == 'v') if(!an_edge.is_infinite_edge()) draw_line(right, left, 2);
-    //if (right) draw_line(right, left, 2);
+    if (mode == 'v') {
+      // c.globalCompositeOperation = "lighter";
+      if(!org.is_infinity && right!=null && left!=null) { draw_triangle(org, right, left); }
+      if(!dest.is_infinity && right!=null && left!=null) { draw_triangle(dest, left, right); }
+      // c.globalCompositeOperation = "source-over";
+    }
+    else if (mode == 'd') {
+      if (!an_edge.is_infinite_edge()){
+        if(left.painted==false && !an_edge.onext().is_infinite_edge()) {
+          del_triangle(org, dest, an_edge.onext().dest());
+          left.painted=true;
+        }
+        if(right && right.painted==false && !an_edge.oprev().is_infinite_edge()) {
+          del_triangle(org, dest, an_edge.oprev().dest());
+          right.painted=true;
+        }
+        draw_line(org, dest, 2);
+      }
+      //if (mode == 'v') if(!an_edge.is_infinite_edge()) draw_line(right, left, 2);
+      //if (right) draw_line(right, left, 2);
+    }
   });
 }
 
@@ -580,7 +593,88 @@ function draw_triangle(v0, v1, v2) {
   context.fill();
   //context.beginPath();
   //context.arc()
+}
 
+function del_triangle(v0, v1, v2) {
+  var midx = (v0.x+v1.x+v2.x)/3, midy = (v0.y+v1.y+v2.y)/3;
+  var x01 = (v0.x + v1.x)/2, y01 = (v0.y + v1.y)/2,
+  x12 = (v1.x + v2.x)/2, y12 = (v2.y + v1.y)/2,
+  x20 = (v0.x + v2.x)/2, y20 = (v2.y + v0.y)/2,
+  // grd0 = context.createLinearGradient(v0.x, v0.y, x12, y12),
+  // grd1 = context.createLinearGradient(v0.x, v0.y, x20, y20),
+  // grd2 = context.createLinearGradient(v0.x, v0.y, x01, y01),
+  grd0 = context.createLinearGradient(v0.x, v0.y, x12, y12),
+  grd1 = context.createLinearGradient(v1.x, v1.y, x20, y20),
+  grd2 = context.createLinearGradient(v2.x, v2.y, x01, y01),
+  c01 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",1)",
+  c00 = "rgba(" + v0.r + "," + v0.g + "," + v0.b + ",0)",
+  c11 = "rgba(" + v1.r + "," + v1.g + "," + v1.b + ",1)",
+  c10 = "rgba(" + v1.r + "," + v1.g + "," + v1.b + ",0)",
+  c21 = "rgba(" + v2.r + "," + v2.g + "," + v2.b + ",1)",
+  c20 = "rgba(" + v2.r + "," + v2.g + "," + v2.b + ",0)";
+
+  grd0.addColorStop(0, c01);
+  grd0.addColorStop(1, c00);
+  grd1.addColorStop(1, c11);
+  grd1.addColorStop(0, c10);
+  grd2.addColorStop(0, c21);
+  grd2.addColorStop(1, c20);
+
+  context.beginPath();
+  context.moveTo(v0.x, v0.y);
+  context.lineTo(v1.x, v1.y);
+  context.lineTo(v2.x, v2.y);
+  context.lineTo(v0.x, v0.y);
+  context.closePath();
+  context.fillStyle = grd0;
+  context.fill();
+  context.fillStyle = grd1;
+  context.fill();
+  context.fillStyle = grd2;
+  context.fill();
+  context.closePath();
+
+  // context.beginPath();
+  // context.moveTo(v0.x, v0.y);
+  // context.lineTo(x12, y12);
+  // context.closePath();
+  // context.strokeStyle = grd0;
+  // context.stroke();
+  // context.closePath();
+  //
+  // context.beginPath();
+  // context.moveTo(v1.x, v1.y);
+  // context.lineTo(x20, y20);
+  // context.closePath();
+  // context.strokeStyle = grd1;
+  // context.stroke();
+  // context.closePath();
+  //
+  // context.beginPath();
+  // context.moveTo(v2.x, v2.y);
+  // context.lineTo(x01, y01);
+  // context.closePath();
+  // context.strokeStyle = grd2;
+  // context.stroke();
+  // context.closePath();
+
+  context.beginPath();
+  context.arc(v0.x, v0.y, Math.random()*15, 0, 2 * Math.PI);
+  context.fillStyle = c01
+  context.fill();
+  context.closePath();
+
+  context.beginPath();
+  context.arc(v1.x, v1.y, Math.random()*15, 0, 2 * Math.PI);
+  context.fillStyle = c11
+  context.fill();
+  context.closePath();
+
+  context.beginPath();
+  context.arc(v2.x, v2.y, Math.random()*15, 0, 2 * Math.PI);
+  context.fillStyle = c21
+  context.fill();
+  context.closePath();
 }
 
 Dot.prototype.equals = function(v) { return this.x == v.x && this.y == v.y; }
