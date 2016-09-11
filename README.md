@@ -19,6 +19,24 @@ These allow users to manually adjust attributes about how the points are rendere
 * `gravity`&mdash; **Disabled by default.** Toggling `gravity` in the bottom bar will enable this slider. Represents the gravitational strength around the set gravity point. (Equivalent to *Gm*<sub>1</sub>*m*<sub>2</sub> from Newtonian gravitational force.)
 
 ***
+### Toggleables
+
+![toggleables](http://i.imgur.com/se5zE9U.png)
+
+These are simply checkboxes in disguise, each word can be clicked to change something or perform a function. If a word is gray or orange, that means the mode is either on (orange) or off (gray). If it is white, that means it toggles between several states or performs a function.
+
+* `screenshot` will open an image of the current canvas (minus the interface) in a new tab, so you can share it easily without all the clutter.
+* `transparent` can be toggled to `opaque`. This changes whether the canvas background (solid black or white block) is rendered with the image when you click `screenshot`. If it is set to `transparent` when `screenshot` is clicked, then only the points and their visuals will be in the image.
+* `gravity` causes points to gravitate around a selected point. **Click in the canvas while** `gravity` **is active to change the gravitation point.** Default gravitation point is in the center of the screen. The `gravity` slider (right-most slider) will become enabled when this mode is on, and will influence the strength of gravitation.
+* `viscosity` causes points which are close enough to create a visual to also stick together a little bit, creating the illusion of elasticity.
+* `edge-bounce` or `edge-loop` determines how dots behave near the edges of the window. `edge-bounce` causes them to reflect the opposite direction (i.e. bounce off). `edge-loop` causes the point to teleport to the opposite side of the screen (i.e. loop around).
+* `black` or `white` toggles the respective color of the background window.
+* `clear` causes the canvas to be cleared before each new frame is drawn. `trails` causes the canvas to slowly fade to transparency, creating a trailing effect. `paint` never clears the canvas, so anything drawn is there until something gets drawn on top of it.
+* `points` toggles the display of the all the points being rendered. **On by default.**
+* `rainbow` is not yet implemented. This will toggle between all the points to be the same color&mdash;which will be user-specified&mdash;or all random colors as they are now.
+* `about` simply links to this page, have to put instructions somewhere!
+
+***
 
 ### Visual Modes
 <center>![sliders](http://i.imgur.com/Nnm41CQ.png)</center>
@@ -117,3 +135,26 @@ Draws a triangle between 3 points which are close enough together (i.e. their di
 </center>
 <center>
 <br>Generates a Voronoi diagram using all points as seeds.</center>
+
+---
+### Fun Recommendations
+Naturally having stared at this application for several hours and testing every new feature, I've stumbled upon some pretty unique combinations. Feel free to try them for yourself!
+
+* Hallucinations (visual: **Feverdream**, `clear` set to `trails`, `points` off)
+![hallucination](http://i.imgur.com/enb6Qux.png)
+
+* Solar System (visual: **None**, `clear` set to `trails` or `paint`, `gravity` on, `points` on)
+![particle collide](http://i.imgur.com/Eo5jWB0.png)  
+
+* 3D Tubes (visual: Anything hollow, `clear` set to `trails` or `paint`)
+![tubes](http://i.imgur.com/mFxEbMv.png)
+
+* Picasso (visual: **Voronoi**, `clear` set to `trails` or `paint`, `points` off)
+![picasso](http://i.imgur.com/9tx9Hsj.png)
+
+* Seizure Weave (visual: **Cells**, `clear` set to `trails` or `paint`, `population` high, `speed` high, `line thickness` low)
+![weave](http://i.imgur.com/bcZ0xWI.png)
+
+* Spider Web Trip (visual: **Arrowheads**, `connections per point` set to 1, `population` sort of high)
+**THIS IS VERY SLOW**
+![stuff](http://i.imgur.com/boyev1w.png)
