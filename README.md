@@ -27,7 +27,7 @@ These are the titles given to the different visual rendering algorithms. Changin
 Here is a list of the modes and how they render:<br><br><br><br>
 
 <center>
-**Lines (square)** ![square lines](http://i.imgur.com/c4vC3GM.png)
+**Lines (square)** ![square lines](http://i.imgur.com/UyAyiap.png)
 </center>
 <center>
 <br>Draws a line with square endings between each pair of points, basic stuff. This mode was the starting point from which **Nebula** expanded from.
