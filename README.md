@@ -24,7 +24,8 @@ These allow users to manually adjust attributes about how the points are rendere
 <center>![sliders](http://i.imgur.com/Nnm41CQ.png)</center>
 
 These are the titles given to the different visual rendering algorithms. Changing this dropdown will change how the interactions between points will display.
-Here is a list of the modes and how they render:
+Here is a list of the modes and how they render:<br><br>
+
 <center>
 **Lines (square)** ![square lines](http://i.imgur.com/c4vC3GM.png)
 </center>
