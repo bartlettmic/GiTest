@@ -47,7 +47,7 @@ Here is a list of the modes and how they render:<br><br><br><br>
 <br>Draws a circle which is tangent with the two points, centered on the midpoint between them.</center>
 
 <br>
-<center>**Annuli** ![annuli](http://i.imgur.com/ONXtZXF.png)</center>
+<center>**Annuli** ![annuli](http://i.imgur.com/deGD2Rd.png)</center>
 </center>
 <center>
 <br>Draws an annulus which is coincident with the two points, centered on the midpoint between them.</center>
