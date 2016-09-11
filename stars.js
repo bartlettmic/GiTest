@@ -190,7 +190,7 @@ function showLabel(e) {
       nfo.E.innerHTML = "line thickness: "+Number(e.value).toFixed(1);
       break;
     case "lines":
-      nfo.E.innerHTML = "connections per point: "+(e.value==0 ? "&infin;" : e.value);
+      nfo.E.innerHTML = "connections per point: "+(e.value==25 ? "&infin;" : e.value);
       break;
     case "G":
       nfo.E.innerHTML = "gravity strength: "+e.value;
@@ -364,7 +364,7 @@ Dot.prototype.update = function() {
 
 function render(c) {
   for (var j = 0; j < dots.length; j++) {
-    if (lines > 0 && dots[j].ids.size >= lines) continue;
+    if (lines < 25 && dots[j].ids.size >= lines) continue;
     //if (gravity && Math.sqrt(Math.pow(mouse.x - dots[j].x, 2) + Math.pow(mouse.y - dots[j].y, 2)) <= maxDist*1.5) continue;
     for (var i = j+1; i < dots.length; i++) {
       if (dots[j].id==i || dots[i].ids.has(dots[j].id)) continue;
@@ -417,7 +417,7 @@ function render(c) {
 
       else {
         for (var z=i+1; z<dots.length; z++) {
-          if (lines > 0 && dots[z].ids.size > lines) continue;
+          if (lines < 25 && dots[z].ids.size > lines) continue;
           if (Math.sqrt(Math.pow(dots[z].x - dots[i].x, 2) + Math.pow(dots[z].y - dots[i].y, 2)) > maxDist || Math.sqrt(Math.pow(dots[z].x - dots[j].x, 2) + Math.pow(dots[z].y - dots[j].y, 2)) > maxDist) continue;
 
           var center = { x: (dots[j].x + dots[i].x + dots[z].x) / 3, y: (dots[j].y + dots[i].y + dots[z].y) / 3, A:this.x, B:0, C:0 };
