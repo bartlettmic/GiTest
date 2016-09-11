@@ -105,7 +105,7 @@ Draws a triangle between 3 points which are close enough together (i.e. their di
 <br>Draws a gradient between each point and the center-point of all points. I recommend toggling `clear` to `trails` for a swanky effect.</center>
 
 <br>
-<center>**Delaunay** ![delaunay](http://i.imgur.com/cPMVU3J.png)</center>
+<center>**Delaunay** ![delaunay](http://i.imgur.com/r4pEJ6Z.png)</center>
 </center>
 <center>
 <br>Generates a Delaunay triangulation between all points.</center>
