@@ -72,7 +72,17 @@ function init() {
 }
 
 //update mouse position
-canvas.onmouseup = function(e){ if (gravity) mouse = { x: e.clientX, y: e.clientY }; };
+canvas.onmouseup = function(e){
+  if (gravity) mouse = { x: e.clientX, y: e.clientY };
+  else {
+    dots.push(new Dot(dots.length));
+    dots[dots.length-1].x = e.clientX;
+    dots[dots.length-1].y = e.clientY;
+    stars = dots.length;
+    var e = document.getElementById("stars");
+    e.value = window[e.id];
+    }
+};
 
 function sliderUpdate(e) {
   if (e.id == "speed") {
