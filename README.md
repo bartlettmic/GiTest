@@ -1,6 +1,6 @@
 ### Nebula:
 
-Try it out: http://rawgit.com/bartlettmic/Topaz/master/index.html
+**<u>Try it out: http://rawgit.com/bartlettmic/Topaz/master/index.html</u>**
 
 **Nebula** is a personal project developed for fun, but also to get introduced and acclimated with HTML, CSS, and JavaScript, and their interactions with one another. I would describe it as a "particle playground," wherein several points simply drift in free space, and visuals are generated based on their proximity to one another.
 
