@@ -3,7 +3,7 @@
     ▶ p"x = cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
     ▶ p"y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
 
-• Deluanay, Polygon, Circumcircles
+• Delaunay, Polygon, Circumcircles
 • Configuration export and import?
 • Add text input toggleable over sliders
 • Click for explode
@@ -30,7 +30,7 @@ stars=25;
 maxDiv = -5.5;
 maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
 maxRadius = maxDist * Math.sqrt(3) / 3;
-speed = 0.25;
+speed = 0.1;
 thick = 3.5;
 //lines = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 3 : 5;
 lines = 5;
@@ -208,7 +208,7 @@ function showLabel(e) {
     default:
     nfo.E.innerHTML = e.id+" = "+e.value;
   }
-  if (e.tagName == "SELECT") nfo.E.innerHTML = "<u><b>What's new:</b></u><br><br>Voronoi and Feverdream visuals added<br><br>Deluanay proof of concept<br> "
+  if (e.tagName == "SELECT") nfo.E.innerHTML = "<u><b>What's new:</b></u><br><br>Voronoi and Feverdream visuals added<br><br>Delaunay proof of concept<br> "
   nfo.E.style.maxWidth = String(rect.width)+"px";
   nfo.E.style.minWidth = String(rect.width)+"px";
   nfo.E.style.left = String(rect.left)+'px';
@@ -567,6 +567,7 @@ function vrender(c) {
 }
 
 function draw_line(fro, to) {
+  context.strokeStyle = !bg ? "black" : "white";
   context.beginPath();
   context.moveTo(fro.x, fro.y);
   context.lineTo(to.x, to.y);
@@ -668,23 +669,23 @@ function del_triangle(v0, v1, v2) {
   // context.stroke();
   // context.closePath();
 
-  context.beginPath();
-  context.arc(v0.x, v0.y, Math.random()*15, 0, 2 * Math.PI);
-  context.fillStyle = c01
-  context.fill();
-  context.closePath();
-
-  context.beginPath();
-  context.arc(v1.x, v1.y, Math.random()*15, 0, 2 * Math.PI);
-  context.fillStyle = c11
-  context.fill();
-  context.closePath();
-
-  context.beginPath();
-  context.arc(v2.x, v2.y, Math.random()*15, 0, 2 * Math.PI);
-  context.fillStyle = c21
-  context.fill();
-  context.closePath();
+  // context.beginPath();
+  // context.arc(v0.x, v0.y, Math.random()*15, 0, 2 * Math.PI);
+  // context.fillStyle = c01
+  // context.fill();
+  // context.closePath();
+  //
+  // context.beginPath();
+  // context.arc(v1.x, v1.y, Math.random()*15, 0, 2 * Math.PI);
+  // context.fillStyle = c11
+  // context.fill();
+  // context.closePath();
+  //
+  // context.beginPath();
+  // context.arc(v2.x, v2.y, Math.random()*15, 0, 2 * Math.PI);
+  // context.fillStyle = c21
+  // context.fill();
+  // context.closePath();
 }
 
 Dot.prototype.equals = function(v) { return this.x == v.x && this.y == v.y; }
