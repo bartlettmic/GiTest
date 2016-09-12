@@ -72,23 +72,6 @@ function init() {
   showLabel(document.getElementsByTagName("SELECT")[0]);
 }
 
-document.addEventListener("orientationchange", function(event){
-    switch(window.orientation)
-    {
-        case -90: case 90:
-            /* Device is in landscape mode */
-            var top = document.getElementById("bottom").style.top;
-            document.getElementById("aboutdiv").style.bottom = top;
-            document.getElementById("screen").style.bottom = top;
-            resizeScreen();
-            break;
-        default:
-        document.getElementById("aboutdiv").style.bottom = "0";
-        document.getElementById("screen").style.bottom = '0';
-        resizeScreen();
-    }
-});
-
 canvas.onmouseup = function(e){
   if (gravity) mouse = { x: e.clientX, y: e.clientY };
   else {

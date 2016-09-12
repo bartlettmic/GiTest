@@ -86,6 +86,7 @@ input[type=checkbox] { display: none; }
     display: inline;
     position: absolute;
     right: 0;
+    left: 100%;
     bottom: 1em;
     height: auto;
     border-radius: 4px;
@@ -93,12 +94,11 @@ input[type=checkbox] { display: none; }
   #screen {
     display: inline;
     position: absolute;
-    left: 0; bottom: 1em;
+    left: 0; top: 1em;
     height: auto;
     border-radius: 4px;
   }
-  #bottom { font-size: auto; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
-
+  #bottom { font-size: auto; position: relative;  bottom: 0; left: 0; height: auto; width: auto; display: block; white-space: nowrap; border-radius: 4px; }
 }
 @media only screen and (orientation:landscape){
   #aboutdiv {
