@@ -83,20 +83,22 @@ input[type=checkbox] { display: none; }
 
 @media only screen and (orientation:portrait){
   #aboutdiv {
-    display: flex;
+    display: inline;
     position: absolute;
     right: 0;
-    bottom: 2em;
+    bottom: 1em;
     height: auto;
     border-radius: 4px;
   }
   #screen {
     display: inline;
     position: absolute;
-    left: 0; bottom: 2em;
+    left: 0; bottom: 1em;
     height: auto;
     border-radius: 4px;
   }
+  #bottom { font-size: auto; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
+
 }
 @media only screen and (orientation:landscape){
   #aboutdiv {
@@ -114,4 +116,5 @@ input[type=checkbox] { display: none; }
     height: auto;
     border-radius: 4px;
   }
+    #bottom { font-size: auto; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
 }
