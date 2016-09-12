@@ -89,6 +89,7 @@ input[type=checkbox] { display: none; }
     bottom: 1em;
     height: auto;
     border-radius: 4px;
+    font-size: 75%;
   }
   #screen {
     display: inline;
@@ -96,6 +97,7 @@ input[type=checkbox] { display: none; }
     left: 0; bottom: 1em;
     height: auto;
     border-radius: 4px;
+    font-size: 75%;
   }
   #bottom { font-size: 75%; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
 }
@@ -107,15 +109,18 @@ input[type=checkbox] { display: none; }
     bottom: 0;
     height: auto;
     border-radius: 4px;
+    font-size: 100%;
   }
   #screenshot {  font-family:monospace; color:white; text-decoration:none;  margin-right:0.25em; margin-left: .5em; }
 
   #screen {
     display: inline-flex;
     position: absolute;
-    left: 0; bottom: 1em;
+    left: 0;
+    bottom: 1em;
     height: auto;
     border-radius: 4px;
+    font-size: 100%;
   }
-    #bottom { font-size: auto; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
+    #bottom { font-size: 100%; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
 }

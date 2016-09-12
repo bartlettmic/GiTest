@@ -268,13 +268,13 @@ function resizeScreen() {
 //Loop function
 function loop() {
   frames++;
-  var date = new Date();
-  if (date - lastSecond >= 1000) {
-    lastSecond =  date
-    fps = frames;
-    frames = 0;
-    //console.log(Math.random()*100+"   "+fps);
-  }
+  // var date = new Date();
+  // if (date - lastSecond >= 1000) {
+  //   lastSecond =  date
+  //   fps = frames;
+  //   frames = 0;
+  //   //console.log(Math.random()*100+"   "+fps);
+  // }
 
   if (!trail) context.clearRect(0, 0, canvas.width, canvas.height);
   else if (trail < 0) {
@@ -307,9 +307,9 @@ function loop() {
       context.closePath();
   }
 
-  context.font = "10px sans-serif";
-  context.fillStyle=bg ? "black" : "white";
-  context.fillText(fps+" Hz",5,window.innerHeight-25);
+  // context.font = "10px sans-serif";
+  // context.fillStyle=bg ? "black" : "white";
+  // context.fillText(fps+" Hz",5,window.innerHeight-25);
 
   //setTimeout(loop, 0);
 }
