@@ -72,7 +72,21 @@ function init() {
   showLabel(document.getElementsByTagName("SELECT")[0]);
 }
 
-//update mouse position
+document.addEventListener("orientationchange", function(event){
+    switch(window.orientation)
+    {
+        case -90: case 90:
+            /* Device is in landscape mode */
+            var top = document.getElementById("bottom").style.top;
+            document.getElementById("aboutdiv").style.bottom = top;
+            document.getElementById("screen").style.bottom = top;
+            break;
+        default:
+        document.getElementById("aboutdiv").style.bottom = "0";
+        document.getElementById("screen").style.bottom = '0';
+    }
+});
+
 canvas.onmouseup = function(e){
   if (gravity) mouse = { x: e.clientX, y: e.clientY };
   else {
