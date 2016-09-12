@@ -212,7 +212,7 @@ function showLabel(e) {
     default:
     nfo.E.innerHTML = e.id+" = "+e.value;
   }
-  if (e.tagName == "SELECT") nfo.E.innerHTML = "<b>For instructions on how to use this application, please click 'about' in the bottom right corner."
+  if (e.tagName == "SELECT") nfo.E.innerHTML = "For instructions on how to use this application, please click <u>about</u> in the bottom right corner."
   nfo.E.style.maxWidth = String(rect.width)+"px";
   nfo.E.style.minWidth = String(rect.width)+"px";
   nfo.E.style.left = String(rect.left)+'px';
