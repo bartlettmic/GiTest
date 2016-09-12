@@ -94,11 +94,11 @@ input[type=checkbox] { display: none; }
   #screen {
     display: inline;
     position: absolute;
-    left: 0; top: 1em;
+    left: 0; bottom: 1em;
     height: auto;
     border-radius: 4px;
   }
-  #bottom { font-size: 50%; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
+  #bottom { font-size: 75%; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
 }
 @media only screen and (orientation:landscape){
   #aboutdiv {
@@ -110,10 +110,10 @@ input[type=checkbox] { display: none; }
     border-radius: 4px;
   }
   #screen {
-    display: inline;
+    display: inline-flex;
     position: absolute;
     left: 0; bottom: 1em;
-    height: 1em;
+    height: auto;
     border-radius: 4px;
   }
     #bottom { font-size: auto; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
