@@ -140,21 +140,21 @@ Draws a triangle between 3 points which are close enough together (i.e. their di
 ### Fun Recommendations
 Naturally having stared at this application for several hours and testing every new feature, I've stumbled upon some pretty unique combinations. Feel free to try them for yourself!
 
-* Hallucinations (visual: **Feverdream**, `clear` set to `trails`, `points` off)
+Hallucinations (visual: **Feverdream**, `clear` set to `trails`, `points` off)
 ![hallucination](http://i.imgur.com/enb6Qux.png)
 
-* Solar System (visual: **None**, `clear` set to `trails` or `paint`, `gravity` on, `points` on)
+Solar System (visual: **None**, `clear` set to `trails` or `paint`, `gravity` on, `points` on)
 ![particle collide](http://i.imgur.com/Eo5jWB0.png)  
 
-* 3D Tubes (visual: Anything hollow, `clear` set to `trails` or `paint`)
+3D Tubes (visual: Anything hollow, `clear` set to `trails` or `paint`)
 ![tubes](http://i.imgur.com/mFxEbMv.png)
 
-* Picasso (visual: **Voronoi**, `clear` set to `trails` or `paint`, `points` off)
+Picasso (visual: **Voronoi**, `clear` set to `trails` or `paint`, `points` off)
 ![picasso](http://i.imgur.com/9tx9Hsj.png)
 
-* Seizure Weave (visual: **Cells**, `clear` set to `trails` or `paint`, `population` high, `speed` high, `line thickness` low)
+Seizure Weave (visual: **Cells**, `clear` set to `trails` or `paint`, `population` high, `speed` high, `line thickness` low)
 ![weave](http://i.imgur.com/bcZ0xWI.png)
 
-* Spider Web Trip (visual: **Arrowheads**, `connections per point` set to 1, `population` sort of high)
+Spider Web Trip (visual: **Arrowheads**, `connections per point` set to 1, `population` sort of high)
 **THIS IS VERY SLOW**
 ![stuff](http://i.imgur.com/boyev1w.png)
