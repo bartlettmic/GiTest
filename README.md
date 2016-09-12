@@ -15,7 +15,7 @@ These allow users to manually adjust attributes about how the points are rendere
 * `max connection length`&mdash; Larger values = points farther away from each other will interact. Represents the largest linear distance (in pixels) between two points where a visual will be drawn.
 * `speed`&mdash; The speed (in pixels/frame) that each point will move (`viscosity` and `gravity` will interfere with this value).
 * `line thickness`&mdash; In visual modes which are not filled-in (e.g. Lines, Annuli, Boxes, etc), this represents how many pixels thick the lines are drawn. **This slider will disable itself on visuals it doesn't apply to.**
-* `connections per point`&mdash; The maximum amount of interactions with other points a given point will render before the checking the next point. Lower values conserve performance, but make animation jumpy. Turn the slider all the way for infinite connections.
+* `connections per point`&mdash; The maximum amount of interactions with other points a given point will render before the checking the next point. Lower values improve performance, but make animation jumpy. Turn the slider all the way up for infinite connections.
 * `gravity`&mdash; **Disabled by default.** Toggling `gravity` in the bottom bar will enable this slider. Represents the gravitational strength around the set gravity point. (Equivalent to *Gm*<sub>1</sub>*m*<sub>2</sub> from Newtonian gravitational force.)
 
 ***
