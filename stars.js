@@ -56,6 +56,10 @@ function init() {
     document.getElementById("screen").style.bottom='0';
     document.getElementById("aboutdiv").style.bottom='0';
   }
+  else {
+    document.getElementById("stars").setAttribute('max', 50);
+    document.getElementById("sped").setAttribute('max', 10)
+  }
   document.getElementsByTagName("BODY")[0].style.fontSize = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? "0.25em !important" : "1em !important";
   nfo.E = document.getElementById("nfo");
 
