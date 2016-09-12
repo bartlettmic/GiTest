@@ -80,3 +80,38 @@ input[type=checkbox] { display: none; }
   height:auto;
   min-width: 0;
 }
+
+@media only screen and (orientation:portrait){
+  #aboutdiv {
+    display: flex;
+    position: absolute;
+    right: 0;
+    bottom: 2em;
+    height: auto;
+    border-radius: 4px;
+  }
+  #screen {
+    display: inline;
+    position: absolute;
+    left: 0; bottom: 2em;
+    height: auto;
+    border-radius: 4px;
+  }
+}
+@media only screen and (orientation:landscape){
+  #aboutdiv {
+    display: flex;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    border-radius: 4px;
+  }
+  #screen {
+    display: inline;
+    position: absolute;
+    left: 0; bottom: 0;
+    height: auto;
+    border-radius: 4px;
+  }
+}
