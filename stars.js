@@ -208,7 +208,7 @@ function showLabel(e) {
     default:
     nfo.E.innerHTML = e.id+" = "+e.value;
   }
-  if (e.tagName == "SELECT") nfo.E.innerHTML = "<u><b>What's new:</b></u><br><br>Voronoi and Feverdream visuals added<br><br>Delaunay proof of concept<br> "
+  if (e.tagName == "SELECT") nfo.E.innerHTML = "<b>For instructions on how to use this application, please click 'about' in the bottom right corner."
   nfo.E.style.maxWidth = String(rect.width)+"px";
   nfo.E.style.minWidth = String(rect.width)+"px";
   nfo.E.style.left = String(rect.left)+'px';
@@ -217,9 +217,15 @@ function showLabel(e) {
   nfo.e = e;
   nfo.E.style.opacity = 1;
   var id = setInterval(fadeLabel, 5);
+  var blink = false;
   function fadeLabel() {
     var date = new Date();
     if (nfo.e.tagName == "SELECT")  {
+      if (date - nfo.time <= 1250) {
+        if (blink) { nfo.E.style.opacity = 0; blink = !blink; }
+        else { nfo.E.style.opacity = 1; blink = !blink; }
+      }
+      else nfo.E.style.opacity = 1;
       if (date - nfo.time >= 10000) {
         nfo.E.innerHTML = "";
         nfo.time = 0;
