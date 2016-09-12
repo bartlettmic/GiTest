@@ -86,7 +86,6 @@ input[type=checkbox] { display: none; }
     display: inline;
     position: absolute;
     right: 0;
-    left: 100%;
     bottom: 1em;
     height: auto;
     border-radius: 4px;
@@ -105,10 +104,12 @@ input[type=checkbox] { display: none; }
     display: flex;
     position: absolute;
     right: 0;
-    bottom: 1em;
+    bottom: 0;
     height: auto;
     border-radius: 4px;
   }
+  #screenshot {  font-family:monospace; color:white; text-decoration:none;  margin-right:0.25em; margin-left: .5em; }
+
   #screen {
     display: inline-flex;
     position: absolute;
