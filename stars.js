@@ -80,10 +80,12 @@ document.addEventListener("orientationchange", function(event){
             var top = document.getElementById("bottom").style.top;
             document.getElementById("aboutdiv").style.bottom = top;
             document.getElementById("screen").style.bottom = top;
+            resizeScreen();
             break;
         default:
         document.getElementById("aboutdiv").style.bottom = "0";
         document.getElementById("screen").style.bottom = '0';
+        resizeScreen();
     }
 });
 
@@ -236,7 +238,7 @@ function showLabel(e) {
   function fadeLabel() {
     var date = new Date();
     if (nfo.e.tagName == "SELECT")  {
-      if (date - nfo.time <= 1250) {
+      if (date - nfo.time <= 1500) {
         if (blink) { nfo.E.style.opacity = 0; blink = !blink; }
         else { nfo.E.style.opacity = 1; blink = !blink; }
       }
