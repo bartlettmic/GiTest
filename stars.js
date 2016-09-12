@@ -23,10 +23,11 @@ mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 canvas = document.getElementById("canv");
 context = null;
 dots = [];
+phone = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 //slider-related globals
 //stars = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 25 : 50;
-stars=25;
+stars=phone ? 10 : 25;
 maxDiv = -5.5;
 maxDist = Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
 maxRadius = maxDist * Math.sqrt(3) / 3;
@@ -51,7 +52,10 @@ function init() {
   context.lineWidth = thick;
   maxDist = -1*Math.sqrt(Math.pow(window.innerWidth, 2) + Math.pow(window.innerHeight, 2)) / maxDiv;
   maxRadius = maxDist * Math.sqrt(3) / 3;
-  screen.orientation.lock('landscape');
+  if (!phone) {
+    document.getElementById("screen").style.bottom='0';
+    document.getElementById("aboutdiv").style.bottom='0';
+  }
   document.getElementsByTagName("BODY")[0].style.fontSize = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? "0.25em !important" : "1em !important";
   nfo.E = document.getElementById("nfo");
 

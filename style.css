@@ -113,7 +113,7 @@ input[type=checkbox] { display: none; }
     display: inline;
     position: absolute;
     left: 0; bottom: 1em;
-    height: auto;
+    height: 1em;
     border-radius: 4px;
   }
     #bottom { font-size: auto; position: relative;  bottom: 0; left: -50%; height: auto; width: auto; display: inline-flex; white-space: nowrap; border-radius: 4px; }
